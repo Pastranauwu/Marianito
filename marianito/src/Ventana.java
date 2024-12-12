@@ -363,6 +363,7 @@ private void manejarEstadoParado(boolean izquierda, String directorio) {
 }
 
 private void manejarSalto(String directorio) {
+
     if (!M.cayendo) {
         M.saltando = true;
         asignarEstadoSalto(M.derecha, directorio);
@@ -371,6 +372,7 @@ private void manejarSalto(String directorio) {
         M.salto();
 
         if (altura_salto == -200) {
+            reproducirSonido(directorio + "salto.wav");
             choca[2] = false;
             choca[3] = false;
             M.saltando = false;
@@ -583,7 +585,7 @@ private void manejarCaida(String directorio) {
     @SuppressWarnings("removal")
     public static void main(String[] args) throws InterruptedException, Throwable {
         JFrame Ventana_Juego = new JFrame("Mario Bross");
-        Ventana_Juego.setSize(1324, 615);
+         Ventana_Juego.setSize(1324, 615);
         Ventana_Juego.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Ventana juego = new Ventana();
