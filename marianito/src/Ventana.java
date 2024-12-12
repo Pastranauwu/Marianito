@@ -225,6 +225,9 @@ public class Ventana extends JPanel {
         } else if (bloque.tipo.equals("Ladrillo")) {
             if (bloque.poder) {
                 actualizarBloque(bloque, "Ladrillo_plano", "Ladrillo_plano.png");
+                //agregar hongo
+                Lista_Poderes.add(new Poderes(bloque.x, bloque.y));
+
             } else {
                 reproducirSonido(ruta+"ladrillo.wav");
                 Lista_Bloques.remove(bloque);
@@ -652,7 +655,7 @@ private void manejarCaida(String directorio) {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                tecla = e.getKeyText(e.getKeyCode());
+                tecla = KeyEvent.getKeyText(e.getKeyCode());
                 if (tecla.equals("Derecha") || tecla.equals("Right")) {
                     juego.movimiento("Derecha");
                 }
@@ -660,15 +663,10 @@ private void manejarCaida(String directorio) {
                     juego.movimiento("Izquierda");
                 }
                 if (tecla.equals("Arriba") || tecla.equals("Up")) {
-                    if (juego.altura_salto == 0) {
-                        juego.url = Ventana.class.getResource("salto.wav");
-                        juego.musica = Applet.newAudioClip(juego.url);
-                        juego.musica.play();
-                        juego.movimiento("Arriba");
-                    }
-
+                    juego.movimiento("Arriba");
                 }
             }
+            
         });
 
         while (true) {
