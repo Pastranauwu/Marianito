@@ -569,7 +569,9 @@ private void manejarCaida(String directorio) {
                         termina = true;
                     } else {
                         Lista_Enemigos.get(i).muerto = true;
-                        reproducirSonidoMuerteEnemigo();
+                        //obtener tipo de enemigo
+                        String tipo = Lista_Enemigos.get(i).tipo;
+                        reproducirSonidoMuerteEnemigo(tipo);
                     }
                 }
             } else {
@@ -602,8 +604,8 @@ private void manejarCaida(String directorio) {
 
     }
 
-    private void reproducirSonidoMuerteEnemigo() {
-    URL url = Ventana.class.getResource("/Assets/muerte.wav");
+    private void reproducirSonidoMuerteEnemigo(String tipo) {
+    URL url = Ventana.class.getResource("/Assets/muerte_" + tipo + ".wav");
     if (url != null) {
         //reproducir sonido de muerte del enemigo
         AudioClip musica = Applet.newAudioClip(url);
