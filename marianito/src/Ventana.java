@@ -38,7 +38,6 @@ public class Ventana extends JPanel {
     Image icons[];
     int cont = 0;
     int tiempo = 1000;
-    private boolean sonidoMuerteReproducido = false;
 
     public void reset() {
         choca = new boolean[4];
@@ -107,6 +106,7 @@ public class Ventana extends JPanel {
         Lista_Bloques.add(new Bloques("Ladrillo_plano", 820, 178, false));
         Lista_Bloques.add(new Bloques("Tuberia", 1000, 307, false));
         Lista_Bloques.add(new Bloques("Ladrillo", 1200, 178, false));
+        Lista_Bloques.add(new Bloques("Ladrillo", 100, 178, true));
         Lista_Bloques.add(new Bloques("Moneda", 1260, 178, false));
         Lista_Bloques.add(new Bloques("Moneda", 1320, 178, false));
         Lista_Bloques.add(new Bloques("Ladrillo", 1260, 28, true));
@@ -217,6 +217,8 @@ public class Ventana extends JPanel {
     }
 
     private void procesarColisionBloque(Bloques bloque) {
+        M.saltando = false;
+        M.cayendo = true;
         String ruta = "/Assets/";
         if (bloque.tipo.equals("Moneda")) {
             puntaje++;
@@ -225,12 +227,16 @@ public class Ventana extends JPanel {
         } else if (bloque.tipo.equals("Ladrillo")) {
             if (bloque.poder) {
                 actualizarBloque(bloque, "Ladrillo_plano", "Ladrillo_plano.png");
-                //agregar hongo
-                Lista_Poderes.add(new Poderes(bloque.x, bloque.y));
+                //hacer que mario vaya para a abajo despues de golpear el bloque
+                //agregar hongo justo arriba del bloque
+                Lista_Poderes.add(new Poderes(bloque.x, bloque.y - 50));
+                //desplegar sonido de power up al salir
+                reproducirSonido("/Assets/powerup_appears.wav");
 
             } else {
                 reproducirSonido(ruta+"ladrillo.wav");
                 Lista_Bloques.remove(bloque);
+                
             }
         }
         choca[0] = true;
@@ -381,6 +387,7 @@ private void manejarSalto(String directorio) {
         altura_salto -= M.vel_salto;
         M.salto();
 
+
         if (altura_salto == -200) {
             reproducirSonido(directorio + "salto.wav");
             choca[2] = false;
@@ -468,8 +475,8 @@ private void manejarCaida(String directorio) {
             Rectangle personaje = new Rectangle(M.xp[0], M.yp[0], marianito.getBounds().width, marianito.getBounds().height);
             if (re.intersects(personaje)) {
                 url = Ventana.class.getResource("/Assets/vida.wav");
-                musica = Applet.newAudioClip(url);
-                musica.play();
+                AudioClip sonido = Applet.newAudioClip(url);
+                sonido.play();
                 //incrementar vidas
                 vidas++;
                 //eliminar hongo
@@ -611,8 +618,8 @@ private void manejarCaida(String directorio) {
     URL url = Ventana.class.getResource("/Assets/muerte_" + tipo + ".wav");
     if (url != null) {
         //reproducir sonido de muerte del enemigo
-        AudioClip musica = Applet.newAudioClip(url);
-        musica.play();
+        AudioClip gover = Applet.newAudioClip(url);
+        gover.play();
     } else {
         System.err.println("No se pudo cargar el sonido de muerte del enemigo.");
     }
