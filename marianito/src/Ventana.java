@@ -125,11 +125,11 @@ public class Ventana extends JPanel {
 
     private void cargarPoderes() {
         // Agregar lógica para inicializar poderes si se requieren
+        Lista_Poderes.add(new Poderes(1, 1));
     }
 
     public void imagenes_Fondo() {
 
-        // System.out.println("Intentando cargar la imagen desde: " + url);
 
         icons[0] = new ImageIcon(url).getImage();
         icons[1] = new ImageIcon(url).getImage();
@@ -141,6 +141,10 @@ public class Ventana extends JPanel {
         for (int i = 0; i < Lista_Enemigos.size(); i++) {
             url = Ventana.class.getResource(Lista_Enemigos.get(i).img_fondo);
             Lista_Enemigos.get(i).icon = new ImageIcon(url).getImage();
+        }
+        for (int i = 0; i < Lista_Poderes.size(); i++) {
+            url = Ventana.class.getResource(Lista_Poderes.get(i).img_fondo);
+            Lista_Poderes.get(i).icon = new ImageIcon(url).getImage();
         }
         url = Ventana.class.getResource("/Assets/" + M.img_fondo[8]);
         M.icon = new ImageIcon(url).getImage();
@@ -595,7 +599,6 @@ private void manejarCaida(String directorio) {
 
         // juego.imagenes_Fondo();
         URL url = Ventana.class.getResource("/Assets/cancion.wav");
-        // System.out.println(url);
         juego.musica = Applet.newAudioClip(url);
         juego.musica.loop();
         juego.musica.play();
