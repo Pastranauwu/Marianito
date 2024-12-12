@@ -681,9 +681,17 @@ private void manejarCaida(String directorio) {
                 juego.repaint();
                 Thread.sleep(47);
             } else {
+                try {
+                    url = Ventana.class.getResource("/Assets/muerte.wav");
+                    juego.musica = Applet.newAudioClip(url);
+                    juego.musica.play();
+                    //parar cancion de fondo
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 Object[] opciones = { "Si", "No" };
                 int n = 0;
-                n = JOptionPane.showOptionDialog(null, "¿Quieres volver a jugar?", "Ping Pong",
+                n = JOptionPane.showOptionDialog(null, "¿Quieres volver a jugar?", "Fin del juego",
                         JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[1]);
                 if (n == 0) {
                     juego.reset();
