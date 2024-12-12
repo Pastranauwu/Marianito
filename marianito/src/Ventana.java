@@ -38,6 +38,7 @@ public class Ventana extends JPanel {
     Image icons[];
     int cont = 0;
     int tiempo = 1000;
+    private boolean sonidoMuerteReproducido = false;
 
     public void reset() {
         choca = new boolean[4];
@@ -356,6 +357,8 @@ private void asignarEstadoColision(String directorio) {
     M.icon = new ImageIcon(url).getImage();
 }
 
+
+
 private void manejarEstadoParado(boolean izquierda, String directorio) {
     sec = 0;
     marianito.xpoints = izquierda ? M.xp_i : M.xp;
@@ -458,6 +461,17 @@ private void manejarCaida(String directorio) {
 
             Rectangle re = new Rectangle(Lista_Poderes.get(i).x - avance_x, Lista_Poderes.get(i).y,
                     Lista_Poderes.get(i).largo, Lista_Poderes.get(i).ancho);
+            //verificar colisión con marianito con el hongo
+            Rectangle personaje = new Rectangle(M.xp[0], M.yp[0], marianito.getBounds().width, marianito.getBounds().height);
+            if (re.intersects(personaje)) {
+                url = Ventana.class.getResource("/Assets/vida.wav");
+                musica = Applet.newAudioClip(url);
+                musica.play();
+                //incrementar vidas
+                vidas++;
+                //eliminar hongo
+                Lista_Poderes.remove(i);
+            }
             /// mn g.drawRect(re.x, re.y, re.width, re.height);
             for (int j = 0; j < Lista_Bloques.size(); j++) {
                 if (Lista_Bloques.get(j).tipo.equals("Tuberia")) {
@@ -555,7 +569,7 @@ private void manejarCaida(String directorio) {
                         termina = true;
                     } else {
                         Lista_Enemigos.get(i).muerto = true;
-
+                        reproducirSonidoMuerteEnemigo();
                     }
                 }
             } else {
@@ -566,6 +580,8 @@ private void manejarCaida(String directorio) {
                         448 - Lista_Enemigos.get(i).img_M, null);
             }
         }
+        
+
         if (M.saltando) {
             movimiento("Arriba");
         }
@@ -585,6 +601,17 @@ private void manejarCaida(String directorio) {
         }
 
     }
+
+    private void reproducirSonidoMuerteEnemigo() {
+    URL url = Ventana.class.getResource("/Assets/muerte.wav");
+    if (url != null) {
+        //reproducir sonido de muerte del enemigo
+        AudioClip musica = Applet.newAudioClip(url);
+        musica.play();
+    } else {
+        System.err.println("No se pudo cargar el sonido de muerte del enemigo.");
+    }
+}
 
     @SuppressWarnings("removal")
     public static void main(String[] args) throws InterruptedException, Throwable {
