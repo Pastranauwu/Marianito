@@ -576,7 +576,7 @@ public class Ventana extends JPanel {
                 Lista_Enemigos.get(i).mov();
                 if (marianito.intersects(Lista_Enemigos.get(i).x - avance_x, Lista_Enemigos.get(i).y, 48, 48)) {
                     if (avance_y == 0) {
-                        url = Ventana.class.getResource("muerte.wav");
+                        url = Ventana.class.getResource("/Assets/"+"muerte.wav");
                         musica = Applet.newAudioClip(url);
                         musica.play();
                         termina = true;
