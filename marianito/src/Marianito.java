@@ -90,35 +90,42 @@ public class Marianito {
         yc4_i = new int[xc4.length];
         xs_i = new int[xs.length];
         ys_i = new int[xs.length];
-
+        int midpoint = getMidpoint(xp);
         for (int i = 0; i < xp.length; i++) {
-            xp_i[i] = 75 - xp[i];
+            xp_i[i] = xp[i];
             yp_i[i] = yp[i];
         }
-        // for (int i = 0; i < xc4.length; i++) {
 
-        //     // System.out.print(xc4[i] + 10 + ",");
-        // }
         for (int i = 0; i < xc1.length; i++) {
-            xc1_i[i] = 75 - xc1[i];
+            xc1_i[i] =  xc1[i];
             yc1_i[i] = yc1[i];
         }
         for (int i = 0; i < xc2.length; i++) {
-            xc2_i[i] = 75 - xc2[i];
+            xc2_i[i] =  xc2[i];
             yc2_i[i] = yc2[i];
         }
         for (int i = 0; i < xc3.length; i++) {
-            xc3_i[i] = 75 - xc3[i];
+            xc3_i[i] =  xc3[i];
             yc3_i[i] = yc3[i];
         }
         for (int i = 0; i < xc4.length; i++) {
-            xc4_i[i] = 75 - xc4[i];
+            xc4_i[i] = xc4[i];
             yc4_i[i] = yc4[i];
         }
         for (int i = 0; i < xs.length; i++) {
             xs_i[i] = 80 - xs[i];
             ys_i[i] = ys[i];
         }
+    }
+
+    private int getMidpoint(int[] coordinates) {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (int coord : coordinates) {
+            if (coord < min) min = coord;
+            if (coord > max) max = coord;
+        }
+        return (min + max) / 2;
     }
 
     void setMax(int[] x, int y[]) {
