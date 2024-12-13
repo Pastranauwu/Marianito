@@ -51,7 +51,7 @@ public class Ventana extends JPanel {
         icons = new Image[3];
         img_fondo = "/Assets/mundo.png";
         url = Ventana.class.getResource(img_fondo);
-        
+
         M = new Marianito();
         marianito = new Polygon();
         marianito.xpoints = M.xp;
@@ -60,7 +60,7 @@ public class Ventana extends JPanel {
         avance_x = 0;
         avance_y = 0;
         sec = 0;
-        
+
         cargarBloques();
         cargarEnemigos();
         cargarPoderes();
@@ -81,7 +81,6 @@ public class Ventana extends JPanel {
         choca = new boolean[10];
         avance_x = 0;
         avance_y = 0;
-        
 
         // Inicialización de variables de control
         puntaje = 0;
@@ -98,7 +97,7 @@ public class Ventana extends JPanel {
         cargarBloques();
         cargarEnemigos();
         cargarPoderes();
-        imagenes_Fondo(); 
+        imagenes_Fondo();
     }
 
     private void cargarBloques() {
@@ -106,7 +105,6 @@ public class Ventana extends JPanel {
         Lista_Bloques.add(new Bloques("Ladrillo_plano", 820, 178, false));
         Lista_Bloques.add(new Bloques("Tuberia", 1000, 307, false));
         Lista_Bloques.add(new Bloques("Ladrillo", 1200, 178, false));
-        Lista_Bloques.add(new Bloques("Ladrillo", 100, 178, true));
         Lista_Bloques.add(new Bloques("Moneda", 1260, 178, false));
         Lista_Bloques.add(new Bloques("Moneda", 1320, 178, false));
         Lista_Bloques.add(new Bloques("Ladrillo", 1260, 28, true));
@@ -126,11 +124,11 @@ public class Ventana extends JPanel {
 
     private void cargarPoderes() {
         // Agregar lógica para inicializar poderes si se requieren
-        Lista_Poderes.add(new Poderes(1, 1));
     }
 
     public void imagenes_Fondo() {
 
+        // System.out.println("Intentando cargar la imagen desde: " + url);
 
         icons[0] = new ImageIcon(url).getImage();
         icons[1] = new ImageIcon(url).getImage();
@@ -142,10 +140,6 @@ public class Ventana extends JPanel {
         for (int i = 0; i < Lista_Enemigos.size(); i++) {
             url = Ventana.class.getResource(Lista_Enemigos.get(i).img_fondo);
             Lista_Enemigos.get(i).icon = new ImageIcon(url).getImage();
-        }
-        for (int i = 0; i < Lista_Poderes.size(); i++) {
-            url = Ventana.class.getResource(Lista_Poderes.get(i).img_fondo);
-            Lista_Poderes.get(i).icon = new ImageIcon(url).getImage();
         }
         url = Ventana.class.getResource("/Assets/" + M.img_fondo[8]);
         M.icon = new ImageIcon(url).getImage();
@@ -217,26 +211,17 @@ public class Ventana extends JPanel {
     }
 
     private void procesarColisionBloque(Bloques bloque) {
-        M.saltando = false;
-        M.cayendo = true;
         String ruta = "/Assets/";
         if (bloque.tipo.equals("Moneda")) {
             puntaje++;
-            reproducirSonido(ruta+"moneda.wav");
+            reproducirSonido(ruta + "moneda.wav");
             actualizarBloque(bloque, "Ladrillo_plano", "Ladrillo_plano.png");
         } else if (bloque.tipo.equals("Ladrillo")) {
             if (bloque.poder) {
                 actualizarBloque(bloque, "Ladrillo_plano", "Ladrillo_plano.png");
-                //hacer que mario vaya para a abajo despues de golpear el bloque
-                //agregar hongo justo arriba del bloque
-                Lista_Poderes.add(new Poderes(bloque.x, bloque.y - 50));
-                //desplegar sonido de power up al salir
-                reproducirSonido("/Assets/powerup_appears.wav");
-
             } else {
-                reproducirSonido(ruta+"ladrillo.wav");
+                reproducirSonido(ruta + "ladrillo.wav");
                 Lista_Bloques.remove(bloque);
-                
             }
         }
         choca[0] = true;
@@ -251,7 +236,7 @@ public class Ventana extends JPanel {
     @SuppressWarnings("removal")
     private void reproducirSonido(String archivoSonido) {
         try {
-            
+
             url = Ventana.class.getResource(archivoSonido);
             musica = Applet.newAudioClip(url);
             musica.play();
@@ -261,157 +246,186 @@ public class Ventana extends JPanel {
     }
 
     public void movimiento(String direccion) {
-    String directorio = "/Assets/";
-    marianito = new Polygon();
+        String directorio = "/Assets/";
+        marianito = new Polygon();
 
-    switch (direccion) {
-        case "Derecha":
-            manejarMovimientoHorizontal(true, directorio);
-            break;
-        case "Izquierda":
-            manejarMovimientoHorizontal(false, directorio);
-            break;
-        case "Parado":
-            manejarEstadoParado(false, directorio);
-            break;
-        case "Parado2":
-            manejarEstadoParado(true, directorio);
-            break;
-        case "Arriba":
-            manejarSalto(directorio);
-            break;
-        case "Abajo":
-            manejarCaida(directorio);
-            break;
-    }
-
-    if (sec == 8) {
-        sec = 0;
-    }
-    colision("");
-}
-
-private void manejarMovimientoHorizontal(boolean derecha, String directorio) {
-    if (derecha) {
-        choca[3] = false;
-        if (!choca[2]) {
-            actualizarMovimiento(true, directorio);
-        } else {
-            asignarEstadoColision(directorio);
+        switch (direccion) {
+            case "Derecha":
+                manejarMovimientoHorizontal(true, directorio);
+                break;
+            case "Izquierda":
+                manejarMovimientoHorizontal(false, directorio);
+                break;
+            case "Parado":
+                manejarEstadoParado(false, directorio);
+                break;
+            case "Parado2":
+                manejarEstadoParado(true, directorio);
+                break;
+            case "Arriba":
+                manejarSalto(directorio);
+                break;
+            case "Abajo":
+                manejarCaida(directorio);
+                break;
         }
-    } else {
-        choca[2] = false;
-        if (avance_x > 0) {
-            if (!choca[3] || (choca[3] && choca[2])) {
-                actualizarMovimiento(false, directorio);
+
+        if (sec == 8) {
+            sec = 0;
+        }
+        colision("");
+    }
+
+    private void manejarMovimientoHorizontal(boolean derecha, String directorio) {
+        if (derecha) {
+            choca[3] = false;
+            if (!choca[2]) {
+                actualizarMovimiento(true, directorio);
             } else {
                 asignarEstadoColision(directorio);
+            }
+        } else {
+            choca[2] = false;
+            if (avance_x > 0) {
+                if (!choca[3] || (choca[3] && choca[2])) {
+                    actualizarMovimiento(false, directorio);
+                } else {
+                    asignarEstadoColision(directorio);
+                }
+            }
+        }
+
+        if (M.encima && !M.saltando) {
+            M.encima = false;
+            M.cayendo = true;
+        }
+    }
+
+    private void actualizarMovimiento(boolean derecha, String directorio) {
+        sec++;
+    
+        // Primero, actualiza la posición de los puntos
+        if (derecha) {
+            M.izquierda = false;
+            M.derecha = true;
+            M.mov_derecha();
+            avance_x += M.velocidad;
+        } else {
+            M.izquierda = true;
+            M.derecha = false;
+            M.mov_izquierda();
+            avance_x -= M.velocidad;
+        }
+    
+        // Después, asigna la imagen en función de la nueva posición de los puntos
+        if (!M.saltando && !M.cayendo) {
+            asignarEstadoAnimacion(sec, derecha, directorio);
+        } else {
+            asignarEstadoSalto(derecha, directorio);
+        }
+    }
+    
+
+    private void asignarEstadoAnimacion(int sec, boolean derecha, String directorio) {
+        int[][] coords = derecha ? new int[][] { M.xc1, M.xc3, M.xc2, M.xc4 }
+                : new int[][] { M.xc1_i, M.xc3_i, M.xc2_i, M.xc4_i };
+        int[] fondos = derecha ? new int[] { 0, 4, 2, 6 } : new int[] { 1, 5, 3, 7 };
+    
+        int index = (sec - 1) / 2;
+        marianito.xpoints = coords[index];
+        marianito.ypoints = derecha ? M.yc1 : M.yc1_i;
+        marianito.npoints = coords[index].length;
+    
+        // Si el personaje se mueve a la izquierda, desplazamos el polígono hacia la derecha para evitar el desfase
+        if (!derecha) {
+            for (int i = 0; i < marianito.xpoints.length; i++) {
+                marianito.xpoints[i] += M.velocidad;  // Ajuste de desplazamiento
+            }
+        }
+    
+        // Actualiza la imagen después de mover los puntos
+        url = Ventana.class.getResource(directorio + M.img_fondo[fondos[index]]);
+        M.x_img = marianito.xpoints[1]; // Actualiza la posición horizontal de la imagen
+        M.icon = new ImageIcon(url).getImage();
+    }
+
+    private void asignarEstadoSalto(boolean derecha, String directorio) {
+        marianito.xpoints = derecha ? M.xs : M.xs_i;
+        marianito.ypoints = derecha ? M.ys : M.ys_i;
+        marianito.npoints = M.xs.length;
+        url = Ventana.class.getResource(directorio + (derecha ? M.img_fondo[10] : M.img_fondo[11]));
+        M.icon = new ImageIcon(url).getImage();
+    }
+
+    private void asignarEstadoColision(String directorio) {
+        marianito.xpoints = M.xp; // Asigna los puntos de la dirección predeterminada
+        marianito.ypoints = M.yp;
+        marianito.npoints = M.xp.length;
+    
+        // Muestra la imagen después de mover los puntos
+        url = Ventana.class.getResource(directorio + M.img_fondo[8]);
+        M.icon = new ImageIcon(url).getImage();
+        M.x_img = marianito.xpoints[0]; // Ajusta la posición horizontal de la imagen
+    }
+    
+
+    private void manejarEstadoParado(boolean izquierda, String directorio) {
+        sec = 0;
+    
+        // Primero, mover los puntos antes de mostrar la imagen
+        marianito.xpoints = izquierda ? M.xp_i : M.xp;
+        marianito.ypoints = izquierda ? M.yp_i : M.yp;
+        marianito.npoints = izquierda ? M.xp_i.length : M.xp.length;
+    
+        // Si estamos moviendo hacia la izquierda, desplazamos el polígono hacia la derecha
+        if (izquierda) {
+            // Desplaza el polígono a la derecha para corregir el desfase
+            for (int i = 0; i < marianito.xpoints.length; i++) {
+                marianito.xpoints[i] += M.velocidad;  // Ajusta la velocidad de movimiento según sea necesario
+            }
+        }
+        
+        // Ahora se asigna la imagen dependiendo de la dirección
+        url = Ventana.class.getResource(directorio + (izquierda ? M.img_fondo[9] : M.img_fondo[8]));
+        M.icon = new ImageIcon(url).getImage();
+    
+        M.x_img = marianito.xpoints[0]; // Ajusta la posición horizontal de la imagen
+    } 
+    
+
+    private void manejarSalto(String directorio) {
+
+        if (!M.cayendo) {
+            M.saltando = true;
+            asignarEstadoSalto(M.derecha, directorio);
+            avance_y -= M.vel_salto;
+            altura_salto -= M.vel_salto;
+            M.salto();
+
+            if (altura_salto == -200) {
+                reproducirSonido(directorio + "salto.wav");
+                choca[2] = false;
+                choca[3] = false;
+                M.saltando = false;
+                M.cayendo = true;
             }
         }
     }
 
-    if (M.encima && !M.saltando) {
-        M.encima = false;
-        M.cayendo = true;
-    }
-}
-
-private void actualizarMovimiento(boolean derecha, String directorio) {
-    sec++;
-    if (derecha) {
-        M.izquierda = false;
-        M.derecha = true;
-        M.mov_derecha();
-        avance_x += M.velocidad;
-    } else {
-        M.izquierda = true;
-        M.derecha = false;
-        M.mov_izquierda();
-        avance_x -= M.velocidad;
-    }
-
-    if (!M.saltando && !M.cayendo) {
-        asignarEstadoAnimacion(sec, derecha, directorio);
-    } else {
-        asignarEstadoSalto(derecha, directorio);
-    }
-}
-
-private void asignarEstadoAnimacion(int sec, boolean derecha, String directorio) {
-    int[][] coords = derecha ? new int[][]{M.xc1, M.xc3, M.xc2, M.xc4} : new int[][]{M.xc1_i, M.xc3_i, M.xc2_i, M.xc4_i};
-    int[] fondos = derecha ? new int[]{0, 4, 2, 6} : new int[]{1, 5, 3, 7};
-    
-    int index = (sec - 1) / 2;
-    marianito.xpoints = coords[index];
-    marianito.ypoints = derecha ? M.yc1 : M.yc1_i;
-    marianito.npoints = coords[index].length;
-    url = Ventana.class.getResource(directorio + M.img_fondo[fondos[index]]);
-    M.x_img = marianito.xpoints[1];
-    M.icon = new ImageIcon(url).getImage();
-}
-
-private void asignarEstadoSalto(boolean derecha, String directorio) {
-    marianito.xpoints = derecha ? M.xs : M.xs_i;
-    marianito.ypoints = derecha ? M.ys : M.ys_i;
-    marianito.npoints = M.xs.length;
-    url = Ventana.class.getResource(directorio + (derecha ? M.img_fondo[10] : M.img_fondo[11]));
-    M.icon = new ImageIcon(url).getImage();
-}
-
-private void asignarEstadoColision(String directorio) {
-    marianito.xpoints = M.xp;
-    marianito.ypoints = M.yp;
-    marianito.npoints = M.xp.length;
-    url = Ventana.class.getResource(directorio + M.img_fondo[8]);
-    M.icon = new ImageIcon(url).getImage();
-}
-
-
-
-private void manejarEstadoParado(boolean izquierda, String directorio) {
-    sec = 0;
-    marianito.xpoints = izquierda ? M.xp_i : M.xp;
-    marianito.ypoints = izquierda ? M.yp_i : M.yp;
-    marianito.npoints = izquierda ? M.xp_i.length : M.xp.length;
-    url = Ventana.class.getResource(directorio + (izquierda ? M.img_fondo[9] : M.img_fondo[8]));
-    M.icon = new ImageIcon(url).getImage();
-    M.x_img = marianito.xpoints[0];
-}
-
-private void manejarSalto(String directorio) {
-
-    if (!M.cayendo) {
-        M.saltando = true;
+    private void manejarCaida(String directorio) {
         asignarEstadoSalto(M.derecha, directorio);
-        avance_y -= M.vel_salto;
-        altura_salto -= M.vel_salto;
-        M.salto();
+        avance_y += M.vel_salto;
+        altura_salto += M.vel_salto;
+        M.caida();
 
-
-        if (altura_salto == -200) {
-            reproducirSonido(directorio + "salto.wav");
+        if (avance_y == 0) {
+            altura_salto = 0;
+            M.cayendo = false;
             choca[2] = false;
             choca[3] = false;
-            M.saltando = false;
-            M.cayendo = true;
+            movimiento("Parado");
         }
     }
-}
-
-private void manejarCaida(String directorio) {
-    asignarEstadoSalto(M.derecha, directorio);
-    avance_y += M.vel_salto;
-    altura_salto += M.vel_salto;
-    M.caida();
-
-    if (avance_y == 0) {
-        altura_salto = 0;
-        M.cayendo = false;
-        choca[2] = false;
-        choca[3] = false;
-        movimiento("Parado");
-    }
-}
 
     @SuppressWarnings("removal")
     @Override
@@ -471,17 +485,6 @@ private void manejarCaida(String directorio) {
 
             Rectangle re = new Rectangle(Lista_Poderes.get(i).x - avance_x, Lista_Poderes.get(i).y,
                     Lista_Poderes.get(i).largo, Lista_Poderes.get(i).ancho);
-            //verificar colisión con marianito con el hongo
-            Rectangle personaje = new Rectangle(M.xp[0], M.yp[0], marianito.getBounds().width, marianito.getBounds().height);
-            if (re.intersects(personaje)) {
-                url = Ventana.class.getResource("/Assets/vida.wav");
-                AudioClip sonido = Applet.newAudioClip(url);
-                sonido.play();
-                //incrementar vidas
-                vidas++;
-                //eliminar hongo
-                Lista_Poderes.remove(i);
-            }
             /// mn g.drawRect(re.x, re.y, re.width, re.height);
             for (int j = 0; j < Lista_Bloques.size(); j++) {
                 if (Lista_Bloques.get(j).tipo.equals("Tuberia")) {
@@ -573,15 +576,13 @@ private void manejarCaida(String directorio) {
                 Lista_Enemigos.get(i).mov();
                 if (marianito.intersects(Lista_Enemigos.get(i).x - avance_x, Lista_Enemigos.get(i).y, 48, 48)) {
                     if (avance_y == 0) {
-                        url = Ventana.class.getResource("muerte.wav");
+                        url = Ventana.class.getResource("/Assets/"+"muerte.wav");
                         musica = Applet.newAudioClip(url);
                         musica.play();
                         termina = true;
                     } else {
                         Lista_Enemigos.get(i).muerto = true;
-                        //obtener tipo de enemigo
-                        String tipo = Lista_Enemigos.get(i).tipo;
-                        reproducirSonidoMuerteEnemigo(tipo);
+
                     }
                 }
             } else {
@@ -592,8 +593,6 @@ private void manejarCaida(String directorio) {
                         448 - Lista_Enemigos.get(i).img_M, null);
             }
         }
-        
-
         if (M.saltando) {
             movimiento("Arriba");
         }
@@ -614,21 +613,10 @@ private void manejarCaida(String directorio) {
 
     }
 
-    private void reproducirSonidoMuerteEnemigo(String tipo) {
-    URL url = Ventana.class.getResource("/Assets/muerte_" + tipo + ".wav");
-    if (url != null) {
-        //reproducir sonido de muerte del enemigo
-        AudioClip gover = Applet.newAudioClip(url);
-        gover.play();
-    } else {
-        System.err.println("No se pudo cargar el sonido de muerte del enemigo.");
-    }
-}
-
     @SuppressWarnings("removal")
     public static void main(String[] args) throws InterruptedException, Throwable {
         JFrame Ventana_Juego = new JFrame("Mario Bross");
-         Ventana_Juego.setSize(1324, 615);
+        Ventana_Juego.setSize(1324, 615);
         Ventana_Juego.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Ventana juego = new Ventana();
@@ -638,6 +626,7 @@ private void manejarCaida(String directorio) {
 
         // juego.imagenes_Fondo();
         URL url = Ventana.class.getResource("/Assets/cancion.wav");
+        // System.out.println(url);
         juego.musica = Applet.newAudioClip(url);
         juego.musica.loop();
         juego.musica.play();
@@ -662,7 +651,7 @@ private void manejarCaida(String directorio) {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                tecla = KeyEvent.getKeyText(e.getKeyCode());
+                tecla = e.getKeyText(e.getKeyCode());
                 if (tecla.equals("Derecha") || tecla.equals("Right")) {
                     juego.movimiento("Derecha");
                 }
@@ -670,10 +659,15 @@ private void manejarCaida(String directorio) {
                     juego.movimiento("Izquierda");
                 }
                 if (tecla.equals("Arriba") || tecla.equals("Up")) {
-                    juego.movimiento("Arriba");
+                    if (juego.altura_salto == 0) {
+                        juego.url = Ventana.class.getResource("salto.wav");
+                        juego.musica = Applet.newAudioClip(juego.url);
+                        juego.musica.play();
+                        juego.movimiento("Arriba");
+                    }
+
                 }
             }
-            
         });
 
         while (true) {
@@ -681,17 +675,9 @@ private void manejarCaida(String directorio) {
                 juego.repaint();
                 Thread.sleep(47);
             } else {
-                try {
-                    url = Ventana.class.getResource("/Assets/muerte.wav");
-                    juego.musica = Applet.newAudioClip(url);
-                    juego.musica.play();
-                    //parar cancion de fondo
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 Object[] opciones = { "Si", "No" };
                 int n = 0;
-                n = JOptionPane.showOptionDialog(null, "¿Quieres volver a jugar?", "Fin del juego",
+                n = JOptionPane.showOptionDialog(null, "¿Quieres volver a jugar?", "Ping Pong",
                         JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[1]);
                 if (n == 0) {
                     juego.reset();
