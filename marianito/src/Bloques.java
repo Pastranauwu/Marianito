@@ -29,11 +29,14 @@ public class Bloques {
             this.x2 = x + 10;
             this.y2 = y + largo;
 
+        } else if (tipo.equals("Bandera")) {
+            largo = 600;
+            ancho = 100;
         } else {
             largo = 60;
             ancho = 60;
         }
-        img_fondo = "/Assets/"+tipo + ".png";
+        img_fondo = "/Assets/"+tipo+ ".png";
         this.poder = poder;
     }
 
