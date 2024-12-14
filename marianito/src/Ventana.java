@@ -173,7 +173,10 @@ public class Ventana extends JPanel {
                 if (!this.banderaTocada){
                     if (marianito.intersects(bloque.x - avance_x, bloque.y, bloque.ancho, bloque.largo)) {
                         this.banderaTocada = true;
+                        reproducirSonido("/Assets/terminado.wav");
                         JOptionPane.showMessageDialog(null, "Has ganado");
+                        //producir sonido de victoria
+
                         this.termina = true;                        
                         System.exit(0);
                     }
