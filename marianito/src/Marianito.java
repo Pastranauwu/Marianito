@@ -75,6 +75,8 @@ public class Marianito {
     "corre5.png",
     "corre6.png", "corre7.png", "corre8.png", "mario.png", "mario2.png",
     "salta.png", "salta2.png" };
+
+    public boolean callendo;
     
     public Marianito() {
         x_img = xp[0];

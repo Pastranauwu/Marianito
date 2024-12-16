@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
@@ -639,7 +640,7 @@ public class Ventana extends JPanel {
             g.drawImage(M.icon, M.x_img, 368 + avance_y, null);
 
         }
-        g.drawPolygon(marianito);
+        // g.drawPolygon(marianito);
         if (sec2 == 14) {
             sec2 = 0;
         }
@@ -658,10 +659,11 @@ public class Ventana extends JPanel {
     }
 
 
-    @SuppressWarnings("removal")
     public static void main(String[] args) throws InterruptedException, Throwable {
 
         Thread pintado;
+        Thread tecladoHilo; // Hilo para manejar las teclas
+
         JFrame Ventana_Juego = new JFrame("Mario Bross");
         Ventana_Juego.setSize(1324, 615);
         Ventana_Juego.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -671,46 +673,46 @@ public class Ventana extends JPanel {
         Ventana_Juego.add(juego);
         Ventana_Juego.setVisible(true);
 
-        // juego.imagenes_Fondo();
+        // Inicializa la música de fondo
         URL url = Ventana.class.getResource("/Assets/cancion2.wav");
         juego.musica = Applet.newAudioClip(url);
         juego.musica.loop();
         juego.musica.play();
-        Ventana_Juego.addKeyListener(new KeyListener() {
-            String tecla;
 
-            @Override
-            public void keyTyped(KeyEvent e) {
-                // TODO Auto-generated method stub
-            }
+        // Manejo del KeyListener en un hilo aparte
+        tecladoHilo = new Thread(() -> {
+            Ventana_Juego.addKeyListener((KeyListener) new KeyAdapter() {
+                String tecla;
 
-            @Override
-            public void keyReleased(KeyEvent e) {
-                tecla = KeyEvent.getKeyText(e.getKeyCode());
-                if (tecla.equals("Derecha") || tecla.equals("Right")) {
-                    juego.movimiento("Parado");
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    tecla = KeyEvent.getKeyText(e.getKeyCode());
+                    if (tecla.equals("Derecha") || tecla.equals("Right")) {
+                        juego.movimiento("Parado");
+                    }
+                    if (tecla.equals("Izquierda") || tecla.equals("Left")) {
+                        juego.movimiento("Parado2");
+                    }
                 }
-                if (tecla.equals("Izquierda") || tecla.equals("Left")) {
-                    juego.movimiento("Parado2");
-                }
-            }
 
-            @Override
-            public void keyPressed(KeyEvent e) {
-                tecla = KeyEvent.getKeyText(e.getKeyCode());
-                if (tecla.equals("Derecha") || tecla.equals("Right")) {
-                    juego.movimiento("Derecha");
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    tecla = KeyEvent.getKeyText(e.getKeyCode());
+                    if (tecla.equals("Derecha") || tecla.equals("Right")) {
+                        juego.movimiento("Derecha");
+                    }
+                    if (tecla.equals("Izquierda") || tecla.equals("Left")) {
+                        juego.movimiento("Izquierda");
+                    }
+                    if (tecla.equals("Arriba") || tecla.equals("Up")) {
+                        juego.movimiento("Arriba");
+                    }
                 }
-                if (tecla.equals("Izquierda") || tecla.equals("Left")) {
-                    juego.movimiento("Izquierda");
-                }
-                if (tecla.equals("Arriba") || tecla.equals("Up")) {
-                    juego.movimiento("Arriba");
-                }
-            }
-
+            });
         });
+        tecladoHilo.start(); // Inicia el hilo para manejar las teclas
 
+        // Hilo para el pintado de la ventana
         pintado = new Thread(() -> {
             while (true) {
                 if (!juego.termina) {
@@ -718,21 +720,18 @@ public class Ventana extends JPanel {
                     try {
                         Thread.sleep(47);
                     } catch (InterruptedException e1) {
-                        // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }
                 } else {
                     try {
                         URL url2 = Ventana.class.getResource("/Assets/muerte.wav");
-                        juego.musica = Applet.newAudioClip(url);
+                        juego.musica = Applet.newAudioClip(url2);
                         juego.musica.play();
-                        // parar cancion de fondo
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     Object[] opciones = { "Si", "No" };
-                    int n = 0;
-                    n = JOptionPane.showOptionDialog(null, "¿Quieres volver a jugar?", "Fin del juego",
+                    int n = JOptionPane.showOptionDialog(null, "¿Quieres volver a jugar?", "Fin del juego",
                             JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones,
                             opciones[1]);
                     if (n == 0) {
@@ -745,6 +744,8 @@ public class Ventana extends JPanel {
                 }
             }
         });
-        pintado.start();        
+        pintado.start(); // Inicia el hilo para el pintado
+
     }
 }
+
