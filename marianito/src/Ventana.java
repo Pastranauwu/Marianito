@@ -107,14 +107,14 @@ public class Ventana extends JPanel {
         Lista_Bloques.add(new Bloques("Ladrillo_plano", 820, 178, false));
         Lista_Bloques.add(new Bloques("Tuberia", 1000, 307, false));
         Lista_Bloques.add(new Bloques("Ladrillo", 1200, 178, false));
-        Lista_Bloques.add(new Bloques("Ladrillo", 100, 178, true));
+        // Lista_Bloques.add(new Bloques("Ladrillo", 100, 178, true));
         Lista_Bloques.add(new Bloques("Moneda", 1260, 178, false));
         Lista_Bloques.add(new Bloques("Moneda", 1320, 178, false));
         Lista_Bloques.add(new Bloques("Ladrillo", 1260, 28, true));
         Lista_Bloques.add(new Bloques("Ladrillo", 1320, 28, true));
         Lista_Bloques.add(new Bloques("Ladrillo", 1380, 178, false));
         Lista_Bloques.add(new Bloques("Tuberia", 1500, 307, false));
-        Lista_Bloques.add(new Bloques("Foso", 700, 445, false));
+        Lista_Bloques.add(new Bloques("Foso", 200, 445, false));
         Lista_Bloques.add(new Bloques("Tuberia", 2000, 307, false));
         Lista_Bloques.add(new Bloques("Bandera", 2500, 0, false));
     }
@@ -123,8 +123,6 @@ public class Ventana extends JPanel {
         Lista_Enemigos.add(new Enemigos("goomba", 800));
         Lista_Enemigos.add(new Enemigos("koopa", 900));
         Lista_Enemigos.add(new Enemigos("koopa", 1300));
-        Lista_Enemigos.add(new Enemigos("goomba", 1650));
-        Lista_Enemigos.add(new Enemigos("goomba", 1800));
     }
 
     private void cargarPoderes() {
@@ -151,7 +149,6 @@ public class Ventana extends JPanel {
         }
         url = Ventana.class.getResource("/Assets/" + M.img_fondo[8]);
         M.icon = new ImageIcon(url).getImage();
-
     }
 
     void colision(String d) {
@@ -164,6 +161,27 @@ public class Ventana extends JPanel {
                 if (verificarColisionVerticalTuberia(bloque)) {
                     break;
                 }
+            } else if (bloque.tipo.equals("Foso")) {
+                if (marianito.intersects(bloque.x - avance_x, bloque.y - 10, bloque.ancho, bloque.largo)) {
+                    //hacemos que caiga
+                    M.cayendo = true;
+                    M.caida();
+                    // System.out.println(M.yp[0]);
+                    System.out.println(altura_salto);
+
+                    // while (!M.cayoFoso) {
+                        if (altura_salto >= 40){
+                            M.cayoFoso = false;
+                            vidas--;
+                            reproducirSonido("/Assets/muerte.wav");
+                            reset();
+                            if (vidas == 0) {
+                                termina = true;
+                            }
+                            break;
+                        }
+                    // }
+                }   
             } else {
                 if (verificarColisionVerticalBloques(bloque)) {
                     break;
@@ -278,7 +296,8 @@ public class Ventana extends JPanel {
     public void movimiento(String direccion) {
         String directorio = "/Assets/";
         marianito = new Polygon();
-
+        //imprimir coor del Mario
+        // System.out.println("Mario: " + M.yp[0] + M.cayoFoso);
         switch (direccion) {
             case "Derecha":
                 manejarMovimientoHorizontal(true, directorio);
@@ -489,7 +508,11 @@ public class Ventana extends JPanel {
             if (Lista_Bloques.get(i).tipo.equals("Bandera")) {
                 g.drawImage(Lista_Bloques.get(i).icon, (Lista_Bloques.get(i).x - avance_x) - 160,
                         Lista_Bloques.get(i).y - 40, null);
-            } else {
+            } else  if (Lista_Bloques.get(i).tipo.equals("Foso")) {
+                g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
+            }
+                else 
+            {
                 g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
             }
         }

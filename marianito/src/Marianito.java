@@ -69,6 +69,7 @@ public class Marianito {
     boolean derecha = false;
     boolean izquierda = false;
     boolean cayendo = false;
+    boolean cayoFoso = false;
     int vel_salto = 10;
     Image icon;
     String img_fondo[] = {"corre1.png", "corre3.png", "corre2.png", "corre4.png",
@@ -227,7 +228,14 @@ public class Marianito {
 
     }
 
+
+
     public void caida() {
+
+        if (this.yp[0] >= 700){
+            this.cayoFoso = true;
+        }
+
         for (int i = 0; i < yp.length; i++) {
             yp[i] = yp[i] + vel_salto;
             yp_i[i] = yp_i[i] + vel_salto;

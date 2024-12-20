@@ -34,7 +34,7 @@ public class Bloques {
             ancho = 100;
         } else if (tipo.equals("Foso")) {
             largo = 20;
-            ancho = 60;
+            ancho = 280;
         }else {
             largo = 60;
             ancho = 60;
