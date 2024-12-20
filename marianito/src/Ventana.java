@@ -16,8 +16,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Ventana extends JPanel {
     LinkedList<Bloques> Lista_Bloques;
@@ -36,13 +34,15 @@ public class Ventana extends JPanel {
     int vidas = 0;
     int sec;
     int sec2 = 0;
-    String img_fondo;
+    String img_fondo = "/Assets/mundo1.png";
     URL url;
     Image icons[];
     int cont = 0;
     int tiempo = 1000;
     boolean banderaTocada = false;
     long inicio = 0 ;
+    int nivel = 1;
+    String cancion = "/Assets/cancion2.wav";
 
     public void reset() {
         choca = new boolean[4];
@@ -53,10 +53,10 @@ public class Ventana extends JPanel {
         Lista_Bloques = new LinkedList<>();
         Lista_Enemigos = new LinkedList<>();
         Lista_Poderes = new LinkedList<>();
+        url = Ventana.class.getResource(this.img_fondo);
         icons = new Image[3];
-        img_fondo = "/Assets/mundo.png";
-        url = Ventana.class.getResource(img_fondo);
-
+        // img_fondo = "/Assets/mundo1.png";
+        
         M = new Marianito();
         marianito = new Polygon();
         marianito.xpoints = M.xp;
@@ -65,11 +65,25 @@ public class Ventana extends JPanel {
         avance_x = 0;
         avance_y = 0;
         sec = 0;
-
-        cargarBloques();
-        cargarEnemigos();
-        cargarPoderes();
-        imagenes_Fondo();
+        
+        if (nivel == 1){
+            cargarBloques();
+            cargarEnemigos();
+            cargarPoderes();
+            imagenes_Fondo();
+        } else if (nivel == 2){
+            // img_fondo = "/Assets/mundo2.png";
+            cargarBloques2();
+            cargarEnemigos2();
+            cargarPoderes2();
+            imagenes_Fondo();
+        } else if (nivel == 3){
+            cargarBloques3();
+            cargarEnemigos2();
+            cargarPoderes2();
+            imagenes_Fondo();
+        }
+        
         termina = false;
     }
 
@@ -79,7 +93,9 @@ public class Ventana extends JPanel {
         Lista_Enemigos = new LinkedList<>();
         Lista_Poderes = new LinkedList<>();
 
+        // img_fondo = "/Assets/mundo1.png"; // Ruta del fondo
         // Inicialización de objetos clave
+        url = Ventana.class.getResource(this.img_fondo);
         M = new Marianito();
         marianito = new Polygon();
         musica = null;
@@ -97,13 +113,64 @@ public class Ventana extends JPanel {
 
         // Configuración del fondo
         icons = new Image[3];
-        img_fondo = "/Assets/mundo.png"; // Ruta del fondo
-        url = Ventana.class.getResource(img_fondo);
-        cargarBloques();
-        cargarEnemigos();
-        cargarPoderes();
-        imagenes_Fondo();
+        if (nivel == 1){
+            cargarBloques();
+            cargarEnemigos();
+            cargarPoderes();
+            imagenes_Fondo();
+        } else if (nivel == 2){
+            // img_fondo = "/Assets/mundo2.png";
+            cargarBloques2();
+            cargarEnemigos2();
+            cargarPoderes2();
+            imagenes_Fondo();
+        } else if (nivel == 3){
+            cargarBloques3();
+            cargarEnemigos2();
+            cargarPoderes2();
+            imagenes_Fondo();
+        }
     }
+
+    private void cargarBloques3(){
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 760, 178, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 820, 178, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 700, 408, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1000, 328, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1000, 208, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1100, 108, false));
+        Lista_Bloques.add(new Bloques("Bandera", 400, 0, false));
+    }
+
+    private void cargarBloques2() {
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 760, 178, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 820, 178, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 700, 408, false));
+        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1000, 328, false));
+        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1000, 208, false));
+        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1100, 108, false));
+        
+        int baseX = 1200; // Coordenada X de la base de la escalera
+        int baseY = 448; // Nivel del suelo
+        int alturaEscalon = 60; // Altura de cada escalón
+    
+        for (int i = 0; i < 5; i++) { // 5 escalones
+            Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", baseX + (i * 60), baseY - (i * alturaEscalon), false));
+        }
+        Lista_Bloques.add(new Bloques("Bandera", 400, 0, false));
+    }
+
+    private void cargarEnemigos2() {
+        Lista_Enemigos.add(new Enemigos("goomba_azul", 800));
+        // Lista_Enemigos.add(new Enemigos("koopa", 900));
+        Lista_Enemigos.add(new Enemigos("goomba_azul", 1300));
+    }
+
+    private void cargarPoderes2() {
+        // Agregar lógica para inicializar poderes si se requieren
+        Lista_Poderes.add(new Poderes(1, 1));
+    }
+
 
     private void cargarBloques() {
         Lista_Bloques.add(new Bloques("Ladrillo_plano", 760, 178, false));
@@ -119,7 +186,8 @@ public class Ventana extends JPanel {
         Lista_Bloques.add(new Bloques("Tuberia", 1500, 307, false));
         Lista_Bloques.add(new Bloques("Foso", 1620, 445, false));
         Lista_Bloques.add(new Bloques("Tuberia", 2000, 307, false));
-        Lista_Bloques.add(new Bloques("Bandera", 2500, 0, false));
+        Lista_Bloques.add(new Bloques("plat1", 200, 448, true));
+        Lista_Bloques.add(new Bloques("Bandera", 500, 0, false));
     }
 
     private void cargarEnemigos() {
@@ -165,22 +233,8 @@ public class Ventana extends JPanel {
                 }
             } else if (bloque.tipo.equals("Foso")) {
                 if (marianito.intersects(bloque.x - avance_x, bloque.y - 10, bloque.ancho, bloque.largo)) {
-                    //hacemos que caiga
                     M.cayendo = true;
                     M.caida();
-
-                    System.out.println(M.yc1_i[0]);
-                    
-                    // if(M.yp[0] > 508){
-                    //     M.cayoFoso = true;
-                    //     vidas--;
-                    //     this.reset();
-                    //     if (vidas == 0) {
-                    //         vidas = 3;
-                    //         termina = true;
-                    //     }
-                    // }
-
                 }   
             } else {
                 if (verificarColisionVerticalBloques(bloque)) {
@@ -190,12 +244,23 @@ public class Ventana extends JPanel {
             if (bloque.tipo.equals("Bandera")) {
                 if (!this.banderaTocada) {
                     if (marianito.intersects(bloque.x - avance_x, bloque.y, bloque.ancho, bloque.largo)) {
+                        this.musica.stop();
                         this.banderaTocada = true;
                         reproducirSonido("/Assets/terminado.wav");
                         JOptionPane.showMessageDialog(null, "Has ganado");
                         // producir sonido de victoria
                         // cargarNivel2();
                         this.banderaTocada = false;
+                        this.nivel += 1;
+                        this.img_fondo = "/Assets/mundo" + this.nivel + ".png";
+
+                        //DETENER CANCION ANTERIOR  
+                        this.cancion = "/Assets/mundo2.wav";
+                        this.musica = Applet.newAudioClip(Ventana.class.getResource(this.cancion));
+                        this.musica.loop();
+
+                        this.reset();
+                        
                     }
                 }
             }
@@ -230,16 +295,19 @@ public class Ventana extends JPanel {
                 return true;
             }
         }
+        
         return false;
     }
 
     private boolean verificarColisionVerticalBloques(Bloques bloque) {
+        //altura de ario
+        System.out.println("Mario: " + M.yp[0]);
         if (marianito.intersects(bloque.x - avance_x, bloque.y - 10, bloque.ancho, bloque.largo + 10)) {
             if (M.saltando && 448 + avance_y - 60 == bloque.y + 60) {
                 procesarColisionBloque(bloque);
                 return true;
             }
-            if (M.cayendo && 448 + avance_y == bloque.y) {
+            if (M.cayendo && M.yp[0] == bloque.y) {
                 M.cayendo = false;
                 M.encima = true;
                 altura_salto = 0;
@@ -257,7 +325,7 @@ public class Ventana extends JPanel {
             puntaje++;
             reproducirSonido(ruta + "moneda.wav");
             actualizarBloque(bloque, "Ladrillo_plano", "Ladrillo_plano.png");
-        } else if (bloque.tipo.equals("Ladrillo")) {
+        } else if (bloque.tipo.equals("Ladrillo") || bloque.tipo.equals("Ladrillo_plano_azul")) {
             if (bloque.poder) {
                 actualizarBloque(bloque, "Ladrillo_plano", "Ladrillo_plano.png");
                 // hacer que mario vaya para a abajo despues de golpear el bloque
@@ -265,11 +333,9 @@ public class Ventana extends JPanel {
                 Lista_Poderes.add(new Poderes(bloque.x, bloque.y - 50));
                 // desplegar sonido de power up al salir
                 reproducirSonido("/Assets/powerup_appears.wav");
-
             } else {
                 reproducirSonido(ruta + "ladrillo.wav");
                 Lista_Bloques.remove(bloque);
-
             }
         }
         choca[0] = true;
@@ -523,6 +589,8 @@ public class Ventana extends JPanel {
             {
                 g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
             }
+            //imprimir posicion de los bloques
+            // System.out.println("Bloque: "+ Lista_Bloques.get(i).tipo+"" + Lista_Bloques.get(i).x + " " + Lista_Bloques.get(i).y);
         }
         for (int i = 0; i < Lista_Poderes.size(); i++) {
             url = Ventana.class.getResource(Lista_Poderes.get(i).img_fondo);
@@ -710,7 +778,7 @@ public class Ventana extends JPanel {
         Ventana_Juego.setVisible(true);
 
         // Inicializa la música de fondo
-        URL url = Ventana.class.getResource("/Assets/cancion2.wav");
+        URL url = Ventana.class.getResource(juego.cancion);
         juego.musica = Applet.newAudioClip(url);
         juego.musica.loop();
         juego.musica.play();

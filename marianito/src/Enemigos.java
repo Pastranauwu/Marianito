@@ -36,6 +36,14 @@ public class Enemigos {
             img_fondo = "/Assets/koopa1.png";
             img_M = 41;
         }
+        if (nombre.equals("goomba_azul")){
+            ancho = alto = 48;
+            this.x = cx;
+            this.y = 400;
+            this.tipo =  nombre;
+            img_fondo = "/Assets/goomba_azul1.png";
+            img_M = 6;
+        }
     }
     
     public void mov(){
