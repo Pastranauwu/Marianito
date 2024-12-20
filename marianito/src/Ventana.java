@@ -110,14 +110,14 @@ public class Ventana extends JPanel {
         Lista_Bloques.add(new Bloques("Ladrillo_plano", 820, 178, false));
         Lista_Bloques.add(new Bloques("Tuberia", 1000, 307, false));
         Lista_Bloques.add(new Bloques("Ladrillo", 1200, 178, false));
-        // Lista_Bloques.add(new Bloques("Ladrillo", 100, 178, true));
+        Lista_Bloques.add(new Bloques("Ladrillo", 100, 178, true));
         Lista_Bloques.add(new Bloques("Moneda", 1260, 178, false));
         Lista_Bloques.add(new Bloques("Moneda", 1320, 178, false));
         Lista_Bloques.add(new Bloques("Ladrillo", 1260, 28, true));
         Lista_Bloques.add(new Bloques("Ladrillo", 1320, 28, true));
         Lista_Bloques.add(new Bloques("Ladrillo", 1380, 178, false));
         Lista_Bloques.add(new Bloques("Tuberia", 1500, 307, false));
-        Lista_Bloques.add(new Bloques("Foso", 200, 445, false));
+        Lista_Bloques.add(new Bloques("Foso", 1620, 445, false));
         Lista_Bloques.add(new Bloques("Tuberia", 2000, 307, false));
         Lista_Bloques.add(new Bloques("Bandera", 2500, 0, false));
     }
@@ -456,10 +456,7 @@ public class Ventana extends JPanel {
         if (cont % 1000 == 0) {
             tiempo--;
         }
-
-        System.out.println(M.yp[0]);
-
-        if (M.yp[0] >= 708) {
+        if (M.yp[0] >= 808) {
             vidas--;
             this.reset();
             if (vidas == 0) {
