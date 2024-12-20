@@ -32,7 +32,10 @@ public class Bloques {
         } else if (tipo.equals("Bandera")) {
             largo = 600;
             ancho = 100;
-        } else {
+        } else if (tipo.equals("Foso")) {
+            largo = 20;
+            ancho = 60;
+        }else {
             largo = 60;
             ancho = 60;
         }

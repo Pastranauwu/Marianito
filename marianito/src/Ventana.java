@@ -114,6 +114,7 @@ public class Ventana extends JPanel {
         Lista_Bloques.add(new Bloques("Ladrillo", 1320, 28, true));
         Lista_Bloques.add(new Bloques("Ladrillo", 1380, 178, false));
         Lista_Bloques.add(new Bloques("Tuberia", 1500, 307, false));
+        Lista_Bloques.add(new Bloques("Foso", 700, 445, false));
         Lista_Bloques.add(new Bloques("Tuberia", 2000, 307, false));
         Lista_Bloques.add(new Bloques("Bandera", 2500, 0, false));
     }
@@ -175,9 +176,8 @@ public class Ventana extends JPanel {
                         reproducirSonido("/Assets/terminado.wav");
                         JOptionPane.showMessageDialog(null, "Has ganado");
                         // producir sonido de victoria
-
-                        this.termina = true;
-                        System.exit(0);
+                        // cargarNivel2();
+                        this.banderaTocada = false;
                     }
                 }
             }
@@ -610,7 +610,12 @@ public class Ventana extends JPanel {
                         url = Ventana.class.getResource("muerte.wav");
                         musica = Applet.newAudioClip(url);
                         musica.play();
-                        termina = true;
+                        vidas--;
+                        this.reset();
+                        if (vidas == 0) {
+                            vidas = 3;
+                            termina = true;
+                        }
                     } else {
                         Lista_Enemigos.get(i).muerto = true;
                         // obtener tipo de enemigo
