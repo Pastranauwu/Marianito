@@ -16,6 +16,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Ventana extends JPanel {
     LinkedList<Bloques> Lista_Bloques;
@@ -40,6 +42,7 @@ public class Ventana extends JPanel {
     int cont = 0;
     int tiempo = 1000;
     boolean banderaTocada = false;
+    long inicio = 0 ;
 
     public void reset() {
         choca = new boolean[4];
@@ -152,7 +155,6 @@ public class Ventana extends JPanel {
     }
 
     void colision(String d) {
-
         for (Bloques bloque : Lista_Bloques) {
             if (bloque.tipo.equals("Tuberia")) {
                 if (verificarColisionHorizontal(bloque)) {
@@ -166,21 +168,19 @@ public class Ventana extends JPanel {
                     //hacemos que caiga
                     M.cayendo = true;
                     M.caida();
-                    // System.out.println(M.yp[0]);
-                    System.out.println(altura_salto);
 
-                    // while (!M.cayoFoso) {
-                        if (altura_salto >= 40){
-                            M.cayoFoso = false;
-                            vidas--;
-                            reproducirSonido("/Assets/muerte.wav");
-                            reset();
-                            if (vidas == 0) {
-                                termina = true;
-                            }
-                            break;
-                        }
+                    System.out.println(M.yc1_i[0]);
+                    
+                    // if(M.yp[0] > 508){
+                    //     M.cayoFoso = true;
+                    //     vidas--;
+                    //     this.reset();
+                    //     if (vidas == 0) {
+                    //         vidas = 3;
+                    //         termina = true;
+                    //     }
                     // }
+
                 }   
             } else {
                 if (verificarColisionVerticalBloques(bloque)) {
@@ -455,6 +455,17 @@ public class Ventana extends JPanel {
         cont += 50;
         if (cont % 1000 == 0) {
             tiempo--;
+        }
+
+        System.out.println(M.yp[0]);
+
+        if (M.yp[0] >= 708) {
+            vidas--;
+            this.reset();
+            if (vidas == 0) {
+                vidas = 3;
+                termina = true;
+            }
         }
 
         int anchoImagen = icons[0].getWidth(null);
