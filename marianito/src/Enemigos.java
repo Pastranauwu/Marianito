@@ -16,13 +16,16 @@ public class Enemigos {
     int img_M;
     String img_fondo;
     String tipo;
+    boolean subiendo;
+    int limiteSuperior;
+    int limiteInferior;
     
-    public Enemigos(String nombre, int cx){
+    public Enemigos(String nombre, int cx, int cy){
         
         if(nombre.equals("goomba")){
             ancho = alto = 48;
             this.x = cx;
-            this.y = 400;
+            this.y = cy;
             this.tipo =  nombre;
             img_fondo = "/Assets/goomba1.png";
             img_M = 6;
@@ -44,6 +47,16 @@ public class Enemigos {
             img_fondo = "/Assets/goomba_azul1.png";
             img_M = 6;
         }
+
+        if (nombre.equals("planta")){
+            ancho = 48;
+            alto = 78;
+            this.x = cx;
+            this.y = 370;
+            this.tipo =  nombre;
+            img_fondo = "/Assets/planta1.png";
+            img_M = 2;
+        }
     }
     
     public void mov(){
@@ -52,6 +65,31 @@ public class Enemigos {
         }
         if(izquierda){
             x=x+velocidad;
+        }
+    }
+
+    public void movVertical() {
+        if (!muerto && tipo.equals("planta")) {
+            if (subiendo) {
+                y -= 2; // Velocidad de movimiento hacia arriba
+                if (y <= limiteSuperior) {
+                    subiendo = false;
+                }
+            } else {
+                y += 2; // Velocidad de movimiento hacia abajo
+                if (y >= limiteInferior) {
+                    subiendo = true;
+                }
+            }
+        }
+    }
+
+    public void movEstatico(){
+        if(derecha){
+            x=x-0;
+        }
+        if(izquierda){
+            x=x+0;
         }
     }
 }

@@ -93,7 +93,7 @@ public class Marianito {
         yc4_i = new int[xc4.length];
         xs_i = new int[xs.length];
         ys_i = new int[xs.length];
-        int midpoint = getMidpoint(xp);
+        // int midpoint = getMidpoint(xp);
         for (int i = 0; i < xp.length; i++) {
             xp_i[i] = xp[i];
             yp_i[i] = yp[i];
@@ -121,15 +121,15 @@ public class Marianito {
         }
     }
 
-    private int getMidpoint(int[] coordinates) {
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-        for (int coord : coordinates) {
-            if (coord < min) min = coord;
-            if (coord > max) max = coord;
-        }
-        return (min + max) / 2;
-    }
+    // private int getMidpoint(int[] coordinates) {
+    //     int min = Integer.MAX_VALUE;
+    //     int max = Integer.MIN_VALUE;
+    //     for (int coord : coordinates) {
+    //         if (coord < min) min = coord;
+    //         if (coord > max) max = coord;
+    //     }
+    //     return (min + max) / 2;
+    // }
 
     void setMax(int[] x, int y[]) {
         int max_x = 0;
