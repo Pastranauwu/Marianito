@@ -40,7 +40,7 @@ public class Ventana extends JPanel {
     int tiempo = 1000;
     boolean banderaTocada = false;
     long inicio = 0 ;
-    int nivel = 1;
+    int nivel = 3;
     boolean enPlat = false;
     String img_fondo = "/Assets/mundo" + nivel + ".png";
     String cancion = "/Assets/mundo" + nivel + ".wav";
@@ -90,8 +90,8 @@ public class Ventana extends JPanel {
             imagenes_Fondo();
         } else if (nivel == 3){
             cargarBloques3();
-            cargarEnemigos2();
-            cargarPoderes2();
+            cargarEnemigos3();
+            cargarPoderes3();
             imagenes_Fondo();
         }
         
@@ -137,8 +137,8 @@ public class Ventana extends JPanel {
             imagenes_Fondo();
         } else if (nivel == 3){
             cargarBloques3();
-            cargarEnemigos2();
-            cargarPoderes2();
+            cargarEnemigos3();
+            cargarPoderes3();
             imagenes_Fondo();
         }
     }
@@ -148,29 +148,91 @@ public class Ventana extends JPanel {
         Lista_Bloques.add(new Bloques("plat1", 500, 408, false));
         Lista_Bloques.add(new Bloques("plat5", 820, 278, false));
         Lista_Bloques.add(new Bloques("plat2", 820, 108, false));
-        Lista_Bloques.add(new Bloques("plat3", 1400, 158, false));
+        Lista_Bloques.add(new Bloques("plat3", 1300, 158, false));
+        Lista_Bloques.add(new Bloques("plat3", 1800, 408, false));
+        Lista_Bloques.add(new Bloques("Bandera", 2000, 0, false));
+        Lista_Bloques.add(new Bloques("Moneda", 1060, 28, false));
+        Lista_Bloques.add(new Bloques("Moneda", 1120, 28, false));
+        Lista_Bloques.add(new Bloques("Ladrillo", 560, 128, true));
+        Lista_Bloques.add(new Bloques("Ladrillo", 620, 128, true));
+        Lista_Bloques.add(new Bloques("Ladrillo", 680, 128, false));
         // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1000, 208, false));
         // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1100, 108, false));
-        // Lista_Bloques.add(new Bloques("Bandera", 400, 0, false));
     }
 
-    private void cargarBloques2() {
-        Lista_Bloques.add(new Bloques("Ladrillo_azul", 760, 178, false));
-        Lista_Bloques.add(new Bloques("Ladrillo_azul", 820, 178, false));
-        Lista_Bloques.add(new Bloques("Ladrillo_azul", 700, 408, false));
-        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1000, 328, false));
-        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1000, 208, false));
-        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1100, 108, false));
+    // private void cargarBloques2() {
+    //     Lista_Bloques.add(new Bloques("Ladrillo_azul", 760, 178, false));
+    //     Lista_Bloques.add(new Bloques("Ladrillo_azul", 820, 178, false));
+    //     Lista_Bloques.add(new Bloques("Ladrillo_azul", 700, 408, false));
+
         
-        int baseX = 1200; // Coordenada X de la base de la escalera
-        int baseY = 448; // Nivel del suelo
-        int alturaEscalon = 60; // Altura de cada escalón
+    //     int baseX = 1200; // Coordenada X de la base de la escalera
+    //     int baseY = 448; // Nivel del suelo
+    //     int alturaEscalon = 60; // Altura de cada escalón
     
-        for (int i = 0; i < 5; i++) { // 5 escalones
+    //     for (int i = 0; i < 5; i++) { // 5 escalones
+    //         Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", baseX + (i * 60), baseY - (i * alturaEscalon), false));
+    //     }
+    //     Lista_Bloques.add(new Bloques("Bandera", 2000, 0, false));
+    // }
+    private void cargarBloques2() {
+        // Bloques iniciales
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 0, 408, true));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 60, 408, true));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 120, 448, true));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 180, 448, true));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 240, 448, true));
+
+        // Plataforma elevada
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 400, 388, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 460, 388, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 520, 388, false));
+
+        // Bloques dispersos
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 700, 448, true));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 760, 448, true));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 820, 448, true));
+
+        // Escalera
+        int baseX = 1000;
+        int baseY = 448;
+        int alturaEscalon = 60;
+        for (int i = 0; i < 5; i++) {
             Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", baseX + (i * 60), baseY - (i * alturaEscalon), false));
         }
-        Lista_Bloques.add(new Bloques("Bandera", 2000, 0, false));
+
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 600, 300, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 660, 300, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 720, 300, false));
+    
+        // Cubrir la escalera de ladrillos azules planos
+        for (int i = 0; i < 5; i++) {
+            Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", baseX + (i * 60), baseY - (i * alturaEscalon) - 60, false));
+        }
+        // Plataforma alta
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1400, 208, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1460, 208, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1520, 208, false));
+
+        // Bloques finales
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1800, 448, true));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1860, 448, true));
+        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1920, 448, true));
+
+
+        
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 1920, 240, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 2060, 240, false));
+        Lista_Bloques.add(new Bloques("Moneda", 2160, 178, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 2120, 240, false));
+        Lista_Bloques.add(new Bloques("Ladrillo", 2100, 240, true));
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 2120, 180, false));
+
+        // Bandera
+        Lista_Bloques.add(new Bloques("Bandera", 2500, 0, false));
     }
+    // Ladrillos azules con altura considerable
+
 
     private void cargarEnemigos2() {
         Lista_Enemigos.add(new Enemigos("goomba_azul", 800, 400));
@@ -178,9 +240,20 @@ public class Ventana extends JPanel {
         Lista_Enemigos.add(new Enemigos("goomba_azul", 1300, 400));
     }
 
+    private void cargarEnemigos3() {
+        Lista_Enemigos.add(new Enemigos("goomba", 1000, 230));
+        // Lista_Enemigos.add(new Enemigos("koopa", 900));
+        // Lista_Enemigos.add(new Enemigos("goomba_azul", 1300, 400));
+    }
+
     private void cargarPoderes2() {
         // Agregar lógica para inicializar poderes si se requieren
         Lista_Poderes.add(new Poderes(1, 1));
+    }
+
+    private void cargarPoderes3() {
+        // Agregar lógica para inicializar poderes si se requieren
+        // Lista_Poderes.add(new Poderes(1, 1));
     }
 
 
@@ -259,7 +332,6 @@ public class Ventana extends JPanel {
                     // M.cayendo = false;
                     break;
                 }
-                System.out.println("Mario: " + M.x_img + "Mario y: " + M.yp[0]);
                 if (M.x_img > 120 ){
                     if (M.yp[0] == 448){
                         M.cayendo = true;
@@ -731,7 +803,18 @@ public class Ventana extends JPanel {
                             }
                             break;
                         }
-                    }
+                    } else if (re.intersects(Lista_Bloques.get(j).x - avance_x, Lista_Bloques.get(j).y,
+                            Lista_Bloques.get(j).ancho, Lista_Bloques.get(j).largo)) {
+                        if (Lista_Enemigos.get(i).derecha) {
+                            Lista_Enemigos.get(i).derecha = false;
+                            Lista_Enemigos.get(i).izquierda = true;
+                        } else {
+                            Lista_Enemigos.get(i).derecha = true;
+                            Lista_Enemigos.get(i).izquierda = false;
+                        }
+                        break;
+                    }  
+                    
                 }
                 if(Lista_Enemigos.get(i).tipo.equals("planta")){
                     Enemigos enemigo = Lista_Enemigos.get(i);
