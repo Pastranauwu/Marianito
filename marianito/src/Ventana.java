@@ -16,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class Ventana extends JPanel {
     LinkedList<Bloques> Lista_Bloques;
@@ -48,6 +49,7 @@ public class Ventana extends JPanel {
     static boolean pantallaCarga = false;
     // boolean enPlataforma = true;
 
+    @SuppressWarnings("removal")
     public void reset() {
         choca = new boolean[4];
         choca[0] = false;
@@ -59,6 +61,7 @@ public class Ventana extends JPanel {
         Lista_Poderes = new LinkedList<>();
         url = Ventana.class.getResource(this.img_fondo);
         icons = new Image[3];
+        banderaTocada = false;
         // img_fondo = "/Assets/mundo1.png";
 
         M = new Marianito();
@@ -274,7 +277,7 @@ public class Ventana extends JPanel {
 
     private void cargarEnemigos() {
         Lista_Enemigos.add(new Enemigos("goomba", 800, 400));
-        Lista_Enemigos.add(new Enemigos("planta", 1000, 370));
+        Lista_Enemigos.add(new Enemigos("planta", 1030, 370));
         Lista_Enemigos.add(new Enemigos("koopa", 900, 400));
         Lista_Enemigos.add(new Enemigos("koopa", 1300, 400));
 
@@ -305,6 +308,7 @@ public class Ventana extends JPanel {
         M.icon = new ImageIcon(url).getImage();
     }
 
+    @SuppressWarnings("removal")
     void colision(String d) {
         for (Bloques bloque : Lista_Bloques) {
             if (bloque.tipo.equals("Tuberia")) {
@@ -343,23 +347,36 @@ public class Ventana extends JPanel {
             if (bloque.tipo.equals("Bandera")) {
                 if (!this.banderaTocada) {
                     if (marianito.intersects(bloque.x - avance_x, bloque.y, bloque.ancho, bloque.largo)) {
-                        this.musica.stop();
+                        System.out.println("tocaste bandera");
                         this.banderaTocada = true;
+                        this.musica.stop();
                         reproducirSonido("/Assets/terminado.wav");
-                        pantallaCarga = true;
-                        JOptionPane.showMessageDialog(null, "Has ganado");
-                        this.banderaTocada = false;
-                        this.signivel = true;
-                        this.nivel += 1;
-                        this.img_fondo = "/Assets/mundo" + this.nivel + ".png";
 
-                        // DETENER CANCION ANTERIOR
-                        this.cancion = "/Assets/mundo" + this.nivel + ".wav";
-                        this.musica = Applet.newAudioClip(Ventana.class.getResource(this.cancion));
-                        this.musica.loop();
+                        // Activar la pantalla de carga en un hilo separado
+                        new Thread(() -> {
+                            try {
+                                pantallaCarga = true; // Activar pantalla de carga
+                                SwingUtilities.invokeLater(this::repaint); // Redibujar en el hilo de eventos de Swing
 
-                        this.reset();
+                                Thread.sleep(3000); // Esperar 2 segundos para mostrar la pantalla de carga
 
+                                // Cambiar nivel y reiniciar juego
+                                // JOptionPane.showMessageDialog(null, "Has ganado");
+                                this.signivel = true;
+                                this.nivel += 1;
+                                this.img_fondo = "/Assets/mundo" + this.nivel + ".png";
+                                this.cancion = "/Assets/mundo" + this.nivel + ".wav";
+                                this.musica = Applet.newAudioClip(Ventana.class.getResource(this.cancion));
+                                this.musica.loop();
+
+                                this.reset();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } finally {
+                                pantallaCarga = false; // Desactivar pantalla de carga
+                                SwingUtilities.invokeLater(this::repaint); // Redibujar en el hilo de eventos de Swing
+                            }
+                        }).start();
                     }
                 }
             }
@@ -656,18 +673,10 @@ public class Ventana extends JPanel {
         g.drawString("" + tiempo, 900, 60);
 
         for (int i = 0; i < Lista_Bloques.size(); i++) {
-            // g.drawRect(Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y,
-            // Lista_Bloques.get(i).ancho,
-            // Lista_Bloques.get(i).largo);
             if (Lista_Bloques.get(i).tipo.equals("Tuberia")) {
                 g.drawRect(Lista_Bloques.get(i).x2 - avance_x, Lista_Bloques.get(i).y2, Lista_Bloques.get(i).ancho2,
                         Lista_Bloques.get(i).largo2);
             }
-            // if (Lista_Bloques.get(i).tipo.equals("Bandera")) {
-            // g.drawRect((Lista_Bloques.get(i).x - avance_x) , Lista_Bloques.get(i).y,
-            // Lista_Bloques.get(i).ancho,
-            // Lista_Bloques.get(i).largo);
-            // }
             if (Lista_Bloques.get(i).tipo.equals("Moneda")) {
                 if (sec2 <= 7) {
                     Lista_Bloques.get(i).img_fondo = "/Assets/Moneda.png";
@@ -679,9 +688,6 @@ public class Ventana extends JPanel {
                     Lista_Bloques.get(i).icon = new ImageIcon(url).getImage();
                 }
             }
-            // g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x,
-            // Lista_Bloques.get(i).y, null);
-
             if (Lista_Bloques.get(i).tipo.equals("Bandera")) {
                 g.drawImage(Lista_Bloques.get(i).icon, (Lista_Bloques.get(i).x - avance_x) - 160,
                         Lista_Bloques.get(i).y - 40, null);
@@ -690,9 +696,7 @@ public class Ventana extends JPanel {
             } else {
                 g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
             }
-            // imprimir posicion de los bloques
-            // System.out.println("Bloque: "+ Lista_Bloques.get(i).tipo+"" +
-            // Lista_Bloques.get(i).x + " " + Lista_Bloques.get(i).y);
+
         }
         for (int i = 0; i < Lista_Poderes.size(); i++) {
             url = Ventana.class.getResource(Lista_Poderes.get(i).img_fondo);
@@ -713,7 +717,6 @@ public class Ventana extends JPanel {
                 // eliminar hongo
                 Lista_Poderes.remove(i);
             }
-            /// mn g.drawRect(re.x, re.y, re.width, re.height);
             for (int j = 0; j < Lista_Bloques.size(); j++) {
                 if (Lista_Bloques.get(j).tipo.equals("Tuberia")) {
                     if (re.intersects(Lista_Bloques.get(j).x2 - avance_x, Lista_Bloques.get(j).y2,
@@ -870,10 +873,7 @@ public class Ventana extends JPanel {
 
     }
 
-    // public void pantallaCarga(Graphics g){
-    // g.drawString("Cargando nivel", 500, 500);
-    // }
-
+    @SuppressWarnings("removal")
     private void reproducirSonidoMuerteEnemigo(String tipo) {
         URL url = Ventana.class.getResource("/Assets/muerte_" + tipo + ".wav");
         if (url != null) {
@@ -885,6 +885,7 @@ public class Ventana extends JPanel {
         }
     }
 
+    @SuppressWarnings("removal")
     public static void main(String[] args) throws InterruptedException, Throwable {
 
         Thread pintado;
