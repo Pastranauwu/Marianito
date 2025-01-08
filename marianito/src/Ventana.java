@@ -164,28 +164,13 @@ public class Ventana extends JPanel {
         // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1100, 108, false));
     }
 
-    // private void cargarBloques2() {
-    // Lista_Bloques.add(new Bloques("Ladrillo_azul", 760, 178, false));
-    // Lista_Bloques.add(new Bloques("Ladrillo_azul", 820, 178, false));
-    // Lista_Bloques.add(new Bloques("Ladrillo_azul", 700, 408, false));
-
-    // int baseX = 1200; // Coordenada X de la base de la escalera
-    // int baseY = 448; // Nivel del suelo
-    // int alturaEscalon = 60; // Altura de cada escalón
-
-    // for (int i = 0; i < 5; i++) { // 5 escalones
-    // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", baseX + (i * 60), baseY
-    // - (i * alturaEscalon), false));
-    // }
-    // Lista_Bloques.add(new Bloques("Bandera", 2000, 0, false));
-    // }
     private void cargarBloques2() {
-        // Bloques iniciales
-        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 0, 408, true));
-        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 60, 408, true));
-        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 120, 448, true));
-        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 180, 448, true));
-        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 240, 448, true));
+        // // Bloques iniciales
+        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 0, 408, true));
+        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 60, 408, true));
+        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 120, 448, true));
+        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 180, 448, true));
+        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 240, 448, true));
 
         // Plataforma elevada
         Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 400, 388, false));
@@ -193,9 +178,9 @@ public class Ventana extends JPanel {
         Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 520, 388, false));
 
         // Bloques dispersos
-        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 700, 448, true));
-        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 760, 448, true));
-        Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 820, 448, true));
+        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 700, 448, true));
+        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 760, 448, true));
+        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 820, 448, true));
 
         // Escalera
         int baseX = 1000;
@@ -224,11 +209,10 @@ public class Ventana extends JPanel {
         Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1860, 448, true));
         Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 1920, 448, true));
 
-        Lista_Bloques.add(new Bloques("Ladrillo_azul", 1920, 240, false));
+        Lista_Bloques.add(new Bloques("Ladrillo_azul", 1940, 240, false));
         Lista_Bloques.add(new Bloques("Ladrillo_azul", 2060, 240, false));
-        Lista_Bloques.add(new Bloques("Moneda", 2160, 178, false));
+        Lista_Bloques.add(new Bloques("Moneda", 2000, 240, false));
         Lista_Bloques.add(new Bloques("Ladrillo_azul", 2120, 240, false));
-        Lista_Bloques.add(new Bloques("Ladrillo", 2100, 240, true));
         Lista_Bloques.add(new Bloques("Ladrillo_azul", 2120, 180, false));
 
         // Bandera
@@ -245,7 +229,6 @@ public class Ventana extends JPanel {
     private void cargarEnemigos3() {
         Lista_Enemigos.add(new Enemigos("goomba", 1000, 230));
         // Lista_Enemigos.add(new Enemigos("koopa", 900));
-        // Lista_Enemigos.add(new Enemigos("goomba_azul", 1300, 400));
     }
 
     private void cargarPoderes2() {
@@ -357,11 +340,7 @@ public class Ventana extends JPanel {
                             try {
                                 pantallaCarga = true; // Activar pantalla de carga
                                 SwingUtilities.invokeLater(this::repaint); // Redibujar en el hilo de eventos de Swing
-
                                 Thread.sleep(3000); // Esperar 2 segundos para mostrar la pantalla de carga
-
-                                // Cambiar nivel y reiniciar juego
-                                // JOptionPane.showMessageDialog(null, "Has ganado");
                                 this.signivel = true;
                                 this.nivel += 1;
                                 this.img_fondo = "/Assets/mundo" + this.nivel + ".png";
@@ -672,32 +651,6 @@ public class Ventana extends JPanel {
         g.drawString("TIEMPO", 900, 30);
         g.drawString("" + tiempo, 900, 60);
 
-        for (int i = 0; i < Lista_Bloques.size(); i++) {
-            if (Lista_Bloques.get(i).tipo.equals("Tuberia")) {
-                g.drawRect(Lista_Bloques.get(i).x2 - avance_x, Lista_Bloques.get(i).y2, Lista_Bloques.get(i).ancho2,
-                        Lista_Bloques.get(i).largo2);
-            }
-            if (Lista_Bloques.get(i).tipo.equals("Moneda")) {
-                if (sec2 <= 7) {
-                    Lista_Bloques.get(i).img_fondo = "/Assets/Moneda.png";
-                    url = Ventana.class.getResource(Lista_Bloques.get(i).img_fondo);
-                    Lista_Bloques.get(i).icon = new ImageIcon(url).getImage();
-                } else {
-                    Lista_Bloques.get(i).img_fondo = "/Assets/Moneda2.png";
-                    url = Ventana.class.getResource(Lista_Bloques.get(i).img_fondo);
-                    Lista_Bloques.get(i).icon = new ImageIcon(url).getImage();
-                }
-            }
-            if (Lista_Bloques.get(i).tipo.equals("Bandera")) {
-                g.drawImage(Lista_Bloques.get(i).icon, (Lista_Bloques.get(i).x - avance_x) - 160,
-                        Lista_Bloques.get(i).y - 40, null);
-            } else if (Lista_Bloques.get(i).tipo.equals("Foso")) {
-                g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
-            } else {
-                g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
-            }
-
-        }
         for (int i = 0; i < Lista_Poderes.size(); i++) {
             url = Ventana.class.getResource(Lista_Poderes.get(i).img_fondo);
             Lista_Poderes.get(i).icon = new ImageIcon(url).getImage();
@@ -770,6 +723,34 @@ public class Ventana extends JPanel {
 
         }
 
+        for (int i = 0; i < Lista_Bloques.size(); i++) {
+            if (Lista_Bloques.get(i).tipo.equals("Tuberia")) {
+                g.drawRect(Lista_Bloques.get(i).x2 - avance_x, Lista_Bloques.get(i).y2, Lista_Bloques.get(i).ancho2,
+                        Lista_Bloques.get(i).largo2);
+            }
+            if (Lista_Bloques.get(i).tipo.equals("Moneda")) {
+                if (sec2 <= 7) {
+                    Lista_Bloques.get(i).img_fondo = "/Assets/Moneda.png";
+                    url = Ventana.class.getResource(Lista_Bloques.get(i).img_fondo);
+                    Lista_Bloques.get(i).icon = new ImageIcon(url).getImage();
+                } else {
+                    Lista_Bloques.get(i).img_fondo = "/Assets/Moneda2.png";
+                    url = Ventana.class.getResource(Lista_Bloques.get(i).img_fondo);
+                    Lista_Bloques.get(i).icon = new ImageIcon(url).getImage();
+                }
+            }
+            if (Lista_Bloques.get(i).tipo.equals("Bandera")) {
+                g.drawImage(Lista_Bloques.get(i).icon, (Lista_Bloques.get(i).x - avance_x) - 160,
+                        Lista_Bloques.get(i).y - 40, null);
+            } else if (Lista_Bloques.get(i).tipo.equals("Foso")) {
+                g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
+            } else {
+                g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
+            }
+
+        }
+        
+
         for (int i = 0; i < Lista_Enemigos.size(); i++) {
             int d = 1;
             if (!Lista_Enemigos.get(i).muerto) {
@@ -821,7 +802,7 @@ public class Ventana extends JPanel {
                 }
                 if (Lista_Enemigos.get(i).tipo.equals("planta")) {
                     Enemigos enemigo = Lista_Enemigos.get(i);
-                    enemigo.movEstatico();
+                    enemigo.movVertical();
                 } else {
                     Lista_Enemigos.get(i).mov();
                 }

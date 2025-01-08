@@ -17,8 +17,8 @@ public class Enemigos {
     String img_fondo;
     String tipo;
     boolean subiendo;
-    int limiteSuperior;
-    int limiteInferior;
+    int limiteSuperior= 235;
+    int limiteInferior= 380;
     
     public Enemigos(String nombre, int cx, int cy){
         
@@ -26,7 +26,7 @@ public class Enemigos {
             ancho = alto = 48;
             this.x = cx;
             this.y = cy;
-            this.tipo =  nombre;
+            this.tipo = nombre;
             img_fondo = "/Assets/goomba1.png";
             img_M = 6;
         }
