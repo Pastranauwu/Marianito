@@ -108,8 +108,7 @@ public class Ventana extends JPanel {
         Lista_Enemigos = new LinkedList<>();
         Lista_Poderes = new LinkedList<>();
 
-        // img_fondo = "/Assets/mundo1.png"; // Ruta del fondo
-        // Inicialización de objetos clave
+        
         url = Ventana.class.getResource(this.img_fondo);
         M = new Marianito();
         marianito = new Polygon();
@@ -228,7 +227,7 @@ public class Ventana extends JPanel {
 
     private void cargarEnemigos3() {
         Lista_Enemigos.add(new Enemigos("goomba", 1000, 230));
-        // Lista_Enemigos.add(new Enemigos("koopa", 900));
+        Lista_Enemigos.add(new Enemigos("koopa_p1", 900, 230 ));
     }
 
     private void cargarPoderes2() {
@@ -721,35 +720,7 @@ public class Ventana extends JPanel {
                 }
             }
 
-        }
-
-        for (int i = 0; i < Lista_Bloques.size(); i++) {
-            if (Lista_Bloques.get(i).tipo.equals("Tuberia")) {
-                g.drawRect(Lista_Bloques.get(i).x2 - avance_x, Lista_Bloques.get(i).y2, Lista_Bloques.get(i).ancho2,
-                        Lista_Bloques.get(i).largo2);
-            }
-            if (Lista_Bloques.get(i).tipo.equals("Moneda")) {
-                if (sec2 <= 7) {
-                    Lista_Bloques.get(i).img_fondo = "/Assets/Moneda.png";
-                    url = Ventana.class.getResource(Lista_Bloques.get(i).img_fondo);
-                    Lista_Bloques.get(i).icon = new ImageIcon(url).getImage();
-                } else {
-                    Lista_Bloques.get(i).img_fondo = "/Assets/Moneda2.png";
-                    url = Ventana.class.getResource(Lista_Bloques.get(i).img_fondo);
-                    Lista_Bloques.get(i).icon = new ImageIcon(url).getImage();
-                }
-            }
-            if (Lista_Bloques.get(i).tipo.equals("Bandera")) {
-                g.drawImage(Lista_Bloques.get(i).icon, (Lista_Bloques.get(i).x - avance_x) - 160,
-                        Lista_Bloques.get(i).y - 40, null);
-            } else if (Lista_Bloques.get(i).tipo.equals("Foso")) {
-                g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
-            } else {
-                g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
-            }
-
-        }
-        
+        }    
 
         for (int i = 0; i < Lista_Enemigos.size(); i++) {
             int d = 1;
@@ -798,7 +769,6 @@ public class Ventana extends JPanel {
                         }
                         break;
                     }
-
                 }
                 if (Lista_Enemigos.get(i).tipo.equals("planta")) {
                     Enemigos enemigo = Lista_Enemigos.get(i);
@@ -833,6 +803,34 @@ public class Ventana extends JPanel {
                         448 - Lista_Enemigos.get(i).img_M, null);
             }
         }
+
+        for (int i = 0; i < Lista_Bloques.size(); i++) {
+            if (Lista_Bloques.get(i).tipo.equals("Tuberia")) {
+                g.drawRect(Lista_Bloques.get(i).x2 - avance_x, Lista_Bloques.get(i).y2, Lista_Bloques.get(i).ancho2,
+                        Lista_Bloques.get(i).largo2);
+            }
+            if (Lista_Bloques.get(i).tipo.equals("Moneda")) {
+                if (sec2 <= 7) {
+                    Lista_Bloques.get(i).img_fondo = "/Assets/Moneda.png";
+                    url = Ventana.class.getResource(Lista_Bloques.get(i).img_fondo);
+                    Lista_Bloques.get(i).icon = new ImageIcon(url).getImage();
+                } else {
+                    Lista_Bloques.get(i).img_fondo = "/Assets/Moneda2.png";
+                    url = Ventana.class.getResource(Lista_Bloques.get(i).img_fondo);
+                    Lista_Bloques.get(i).icon = new ImageIcon(url).getImage();
+                }
+            }
+            if (Lista_Bloques.get(i).tipo.equals("Bandera")) {
+                g.drawImage(Lista_Bloques.get(i).icon, (Lista_Bloques.get(i).x - avance_x) - 160,
+                        Lista_Bloques.get(i).y - 40, null);
+            } else if (Lista_Bloques.get(i).tipo.equals("Foso")) {
+                g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
+            } else {
+                g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
+            }
+
+        }
+
 
         if (M.saltando) {
             movimiento("Arriba");
