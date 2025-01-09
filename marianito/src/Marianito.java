@@ -1,6 +1,6 @@
 package src;
 import java.awt.Image;
-import java.net.URL;
+
 
 public class Marianito {
     int[] xp = { 15, 15, 20, 20, 25, 25, 15, 15, 20, 20, 25, 25, 30, 30, 20, 20, 25, 25, 30, 30, 35, 35, 55, 55, 70, 70,

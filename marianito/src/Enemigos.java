@@ -34,7 +34,7 @@ public class Enemigos {
             ancho = 48;
             alto = 78;
             this.x = cx;
-            this.y = 370;
+            this.y = cy;
             this.tipo =  nombre;
             img_fondo = "/Assets/koopa1.png";
             img_M = 41;
@@ -69,7 +69,7 @@ public class Enemigos {
     }
 
     public void movVertical() {
-        if (!muerto && tipo.equals("planta")) {
+        if (tipo.equals("planta") || tipo.equals("koopa")) {
             if (subiendo) {
                 y -= 2; // Velocidad de movimiento hacia arriba
                 if (y <= limiteSuperior) {

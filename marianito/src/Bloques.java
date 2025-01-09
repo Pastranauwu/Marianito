@@ -1,7 +1,5 @@
 package src;
 import java.awt.Image;
-import java.awt.Rectangle;
-import java.net.URL;
 
 public class Bloques {
     String tipo;

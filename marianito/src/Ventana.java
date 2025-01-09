@@ -108,7 +108,6 @@ public class Ventana extends JPanel {
         Lista_Enemigos = new LinkedList<>();
         Lista_Poderes = new LinkedList<>();
 
-        
         url = Ventana.class.getResource(this.img_fondo);
         M = new Marianito();
         marianito = new Polygon();
@@ -165,21 +164,11 @@ public class Ventana extends JPanel {
 
     private void cargarBloques2() {
         // // Bloques iniciales
-        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 0, 408, true));
-        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 60, 408, true));
-        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 120, 448, true));
-        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 180, 448, true));
-        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 240, 448, true));
 
         // Plataforma elevada
         Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 400, 388, false));
         Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 460, 388, false));
         Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 520, 388, false));
-
-        // Bloques dispersos
-        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 700, 448, true));
-        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 760, 448, true));
-        // Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", 820, 448, true));
 
         // Escalera
         int baseX = 1000;
@@ -221,13 +210,14 @@ public class Ventana extends JPanel {
 
     private void cargarEnemigos2() {
         Lista_Enemigos.add(new Enemigos("goomba_azul", 800, 400));
-        // Lista_Enemigos.add(new Enemigos("koopa", 900));
         Lista_Enemigos.add(new Enemigos("goomba_azul", 1300, 400));
     }
 
     private void cargarEnemigos3() {
-        Lista_Enemigos.add(new Enemigos("goomba", 1000, 230));
-        Lista_Enemigos.add(new Enemigos("koopa_p1", 900, 230 ));
+        Lista_Enemigos.add(new Enemigos("goomba", 1000, 230 ));
+        Lista_Enemigos.add(new Enemigos("goomba", 1000, 200 ));
+        Lista_Enemigos.add(new Enemigos("goomba", 1000, 170));
+        Lista_Enemigos.add(new Enemigos("koopa", 300, 150));
     }
 
     private void cargarPoderes2() {
@@ -260,8 +250,8 @@ public class Ventana extends JPanel {
     private void cargarEnemigos() {
         Lista_Enemigos.add(new Enemigos("goomba", 800, 400));
         Lista_Enemigos.add(new Enemigos("planta", 1030, 370));
-        Lista_Enemigos.add(new Enemigos("koopa", 900, 400));
-        Lista_Enemigos.add(new Enemigos("koopa", 1300, 400));
+        Lista_Enemigos.add(new Enemigos("koopa", 900, 375));
+        Lista_Enemigos.add(new Enemigos("koopa", 1300, 375));
 
     }
 
@@ -419,7 +409,7 @@ public class Ventana extends JPanel {
             puntaje++;
             reproducirSonido(ruta + "moneda.wav");
             actualizarBloque(bloque, "Ladrillo_plano", "Ladrillo_plano.png");
-        } else if (bloque.tipo.equals("Ladrillo") || bloque.tipo.equals("Ladrillo_plano_azul")) {
+        } else if (bloque.tipo.equals("Ladrillo") || bloque.tipo.equals("Ladrillo_plano_azul") || bloque.tipo.equals("Ladrillo_azul")) {
             if (bloque.poder) {
                 actualizarBloque(bloque, "Ladrillo_plano", "Ladrillo_plano.png");
                 // hacer que mario vaya para a abajo despues de golpear el bloque
@@ -720,18 +710,24 @@ public class Ventana extends JPanel {
                 }
             }
 
-        }    
+        }
 
         for (int i = 0; i < Lista_Enemigos.size(); i++) {
             int d = 1;
             if (!Lista_Enemigos.get(i).muerto) {
-                if (Lista_Enemigos.get(i).tipo.equals("koopa")) {
-                    if (Lista_Enemigos.get(i).derecha) {
-                        d = 1;
-                    } else {
-                        d = 3;
+                if(nivel==3 && Lista_Enemigos.get(i).tipo.equals("koopa") ){
+                    Enemigos enemigo = Lista_Enemigos.get(i);
+                    enemigo.movVertical();
+                }else{
+                    if (Lista_Enemigos.get(i).tipo.equals("koopa")) {
+                        if (Lista_Enemigos.get(i).derecha) {
+                            d = 1;
+                        } else {
+                            d = 3;
+                        }
                     }
                 }
+                
                 if (sec2 <= 7) {
                     Lista_Enemigos.get(i).img_fondo = "/Assets/" + Lista_Enemigos.get(i).tipo + (d + ".png");
                     url = Ventana.class.getResource(Lista_Enemigos.get(i).img_fondo);
@@ -774,11 +770,15 @@ public class Ventana extends JPanel {
                     Enemigos enemigo = Lista_Enemigos.get(i);
                     enemigo.movVertical();
                 } else {
-                    Lista_Enemigos.get(i).mov();
+                    if(!(nivel == 3 && Lista_Enemigos.get(i).tipo.equals("koopa"))){
+                        Lista_Enemigos.get(i).mov();
+                    }
+                    
                 }
 
                 if (marianito.intersects(Lista_Enemigos.get(i).x - avance_x, Lista_Enemigos.get(i).y, 48, 48)) {
                     if (avance_y == 0) {
+                        System.out.println(avance_y);
                         url = Ventana.class.getResource("muerte.wav");
                         musica = Applet.newAudioClip(url);
                         musica.play();
@@ -798,7 +798,20 @@ public class Ventana extends JPanel {
             } else {
                 Lista_Enemigos.get(i).img_fondo = "/Assets/" + Lista_Enemigos.get(i).tipo + "_M.png";
                 url = Ventana.class.getResource(Lista_Enemigos.get(i).img_fondo);
-                Lista_Enemigos.get(i).icon = new ImageIcon(url).getImage();
+                if (Lista_Enemigos.get(i).tipo.equals("planta")) {
+                    url = Ventana.class.getResource("muerte.wav");
+                    musica = Applet.newAudioClip(url);
+                    musica.play();
+                    vidas--;
+                    this.reset();
+                    if (vidas == 0) {
+                        vidas = 3;
+                        termina = true;
+                    }
+
+                } else {
+                    Lista_Enemigos.get(i).icon = new ImageIcon(url).getImage();
+                }
                 g.drawImage(Lista_Enemigos.get(i).icon, Lista_Enemigos.get(i).x - avance_x,
                         448 - Lista_Enemigos.get(i).img_M, null);
             }
@@ -830,7 +843,6 @@ public class Ventana extends JPanel {
             }
 
         }
-
 
         if (M.saltando) {
             movimiento("Arriba");
