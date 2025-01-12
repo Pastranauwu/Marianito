@@ -97,6 +97,9 @@ public class Ventana extends JPanel {
             cargarEnemigos3();
             cargarPoderes3();
             imagenes_Fondo();
+        }else{
+            JOptionPane.showMessageDialog(null, "¡Felicidades! Has completado el juego");
+            System.exit(0);
         }
 
         termina = false;
@@ -278,130 +281,112 @@ public class Ventana extends JPanel {
         }
         url = Ventana.class.getResource("/Assets/" + M.img_fondo[8]);
         M.icon = new ImageIcon(url).getImage();
-    }
+        }
 
-    @SuppressWarnings("removal")
-    void colision(String d) {
+        @SuppressWarnings("removal")
+        void colision(String d) {
         for (Bloques bloque : Lista_Bloques) {
             if (bloque.tipo.equals("Tuberia")) {
-                if (verificarColisionHorizontal(bloque)) {
-                    break;
-                }
-                if (verificarColisionVerticalTuberia(bloque)) {
-                    break;
-                }
-            } else if (bloque.tipo.equals("Foso")) {
-                if (marianito.intersects(bloque.x - avance_x, bloque.y - 10, bloque.ancho, bloque.largo)) {
-                    M.cayendo = true;
-                    M.caida();
-                }
-            } else if (bloque.tipo.startsWith("plat")) {
-                if (verificarColisionHorizontal(bloque)) {
-                    break;
-                }
-
-                if (verificarColisionVerticalBloques(bloque)) {
-                    // M.cayendo = false;
-                    break;
-                }
-                if (M.x_img > 120) {
-                    if (M.yp[0] == 448) {
-                        M.cayendo = true;
-                        M.caida();
-                    }
-
-                }
-            } else {
-                if (verificarColisionVerticalBloques(bloque)) {
-                    break;
-                }
+            if (verificarColisionHorizontal(bloque) || verificarColisionVerticalTuberia(bloque)) {
+                break;
             }
-            if (bloque.tipo.equals("Bandera")) {
-                if (!this.banderaTocada) {
-                    if (marianito.intersects(bloque.x - avance_x, bloque.y, bloque.ancho, bloque.largo)) {
-                        System.out.println("tocaste bandera");
-                        this.banderaTocada = true;
-                        this.musica.stop();
-                        reproducirSonido("/Assets/terminado.wav");
+            } else if (bloque.tipo.equals("Foso")) {
+            if (marianito.intersects(bloque.x - avance_x, bloque.y - 10, bloque.ancho, bloque.largo)) {
+                M.cayendo = true;
+                M.caida();
+            }
+            } else if (bloque.tipo.startsWith("plat")) {
+            if (verificarColisionHorizontal(bloque) || verificarColisionVerticalBloques(bloque)) {
+                break;
+            }
+            if (M.x_img > 120 && M.yp[0] == 448) {
+                M.cayendo = true;
+                M.caida();
+            }
+            } else {
+            if (verificarColisionVerticalBloques(bloque)) {
+                break;
+            }
+            }
+            if (bloque.tipo.equals("Bandera") && !this.banderaTocada) {
+            if (marianito.intersects(bloque.x - avance_x, bloque.y, bloque.ancho, bloque.largo)) {
+                System.out.println("tocaste bandera");
+                this.banderaTocada = true;
+                this.musica.stop();
+                reproducirSonido("/Assets/terminado.wav");
 
-                        // Activar la pantalla de carga en un hilo separado
-                        new Thread(() -> {
-                            try {
-                                pantallaCarga = true; // Activar pantalla de carga
-                                SwingUtilities.invokeLater(this::repaint); // Redibujar en el hilo de eventos de Swing
-                                Thread.sleep(3000); // Esperar 2 segundos para mostrar la pantalla de carga
-                                this.signivel = true;
-                                this.nivel += 1;
-                                this.img_fondo = "/Assets/mundo" + this.nivel + ".png";
-                                this.cancion = "/Assets/mundo" + this.nivel + ".wav";
-                                this.musica = Applet.newAudioClip(Ventana.class.getResource(this.cancion));
-                                this.musica.loop();
+                // Activar la pantalla de carga en un hilo separado
+                new Thread(() -> {
+                try {
+                    pantallaCarga = true; // Activar pantalla de carga
+                    SwingUtilities.invokeLater(this::repaint); // Redibujar en el hilo de eventos de Swing
+                    Thread.sleep(3000); // Esperar 2 segundos para mostrar la pantalla de carga
+                    this.signivel = true;
+                    this.nivel += 1;
+                    this.img_fondo = "/Assets/mundo" + this.nivel + ".png";
+                    this.cancion = "/Assets/mundo" + this.nivel + ".wav";
+                    this.musica = Applet.newAudioClip(Ventana.class.getResource(this.cancion));
+                    this.musica.loop();
 
-                                this.reset();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            } finally {
-                                pantallaCarga = false; // Desactivar pantalla de carga
-                                SwingUtilities.invokeLater(this::repaint); // Redibujar en el hilo de eventos de Swing
-                            }
-                        }).start();
-                    }
+                    this.reset();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    pantallaCarga = false; // Desactivar pantalla de carga
+                    SwingUtilities.invokeLater(this::repaint); // Redibujar en el hilo de eventos de Swing
                 }
+                }).start();
+            }
             }
         }
-    }
+        }
 
-    private boolean verificarColisionHorizontal(Bloques bloque) {
+        private boolean verificarColisionHorizontal(Bloques bloque) {
         if (marianito.intersects(bloque.x2 - avance_x, bloque.y2, bloque.ancho2, bloque.largo2)) {
             if (M.derecha) {
-                choca[2] = true;
-                return true;
+            choca[2] = true;
+            } else if (M.izquierda) {
+            choca[3] = true;
             }
-            if (M.izquierda) {
-                choca[3] = true;
-                return true;
-            }
+            return true;
         }
         return false;
-    }
+        }
 
-    private boolean verificarColisionVerticalTuberia(Bloques bloque) {
+        private boolean verificarColisionVerticalTuberia(Bloques bloque) {
         if (marianito.intersects(bloque.x - avance_x, bloque.y - 10, bloque.ancho + 10, bloque.largo + 10)) {
             if (M.saltando && 448 + avance_y == bloque.y + 70) {
-                M.saltando = false;
-                M.cayendo = true;
-                return true;
+            M.saltando = false;
+            M.cayendo = true;
+            return true;
             }
             if (M.cayendo && 448 + avance_y - 11 == bloque.y - 10) {
-                M.cayendo = false;
-                M.encima = true;
-                altura_salto = 0;
-                return true;
+            M.cayendo = false;
+            M.encima = true;
+            altura_salto = 0;
+            return true;
             }
         }
-
         return false;
-    }
+        }
 
-    private boolean verificarColisionVerticalBloques(Bloques bloque) {
+        private boolean verificarColisionVerticalBloques(Bloques bloque) {
         if (marianito.intersects(bloque.x - avance_x, bloque.y - 10, bloque.ancho, bloque.largo + 10)) {
             if (M.saltando && 448 + avance_y - 60 == bloque.y + 60) {
-                procesarColisionBloque(bloque);
-                return true;
+            procesarColisionBloque(bloque);
+            return true;
             }
             if (M.cayendo && M.yp[0] == bloque.y) {
-                // enPlataforma = true;
-                M.cayendo = false;
-                M.encima = true;
-                altura_salto = 0;
-                return true;
+            M.cayendo = false;
+            M.encima = true;
+            altura_salto = 0;
+            return true;
             }
-            // si es plat1, plat2, plat3, plat4, plat5
         }
         return false;
-    }
+        }
 
-    private void procesarColisionBloque(Bloques bloque) {
+        private void procesarColisionBloque(Bloques bloque) {
         M.saltando = false;
         M.cayendo = true;
         String ruta = "/Assets/";
@@ -411,86 +396,80 @@ public class Ventana extends JPanel {
             actualizarBloque(bloque, "Ladrillo_plano", "Ladrillo_plano.png");
         } else if (bloque.tipo.equals("Ladrillo") || bloque.tipo.equals("Ladrillo_plano_azul") || bloque.tipo.equals("Ladrillo_azul")) {
             if (bloque.poder) {
-                actualizarBloque(bloque, "Ladrillo_plano", "Ladrillo_plano.png");
-                // hacer que mario vaya para a abajo despues de golpear el bloque
-                // agregar hongo justo arriba del bloque
-                Lista_Poderes.add(new Poderes(bloque.x, bloque.y - 50));
-                // desplegar sonido de power up al salir
-                reproducirSonido("/Assets/powerup_appears.wav");
+            actualizarBloque(bloque, "Ladrillo_plano", "Ladrillo_plano.png");
+            Lista_Poderes.add(new Poderes(bloque.x, bloque.y - 50));
+            reproducirSonido("/Assets/powerup_appears.wav");
             } else {
-                reproducirSonido(ruta + "ladrillo.wav");
-                Lista_Bloques.remove(bloque);
+            reproducirSonido(ruta + "ladrillo.wav");
+            Lista_Bloques.remove(bloque);
             }
         }
         choca[0] = true;
-    }
+        }
 
-    private void actualizarBloque(Bloques bloque, String nuevoTipo, String nuevaImagen) {
+        private void actualizarBloque(Bloques bloque, String nuevoTipo, String nuevaImagen) {
         bloque.tipo = nuevoTipo;
         bloque.img_fondo = nuevaImagen;
         bloque.icon = new ImageIcon(getClass().getResource("/Assets/" + nuevaImagen)).getImage();
-    }
+        }
 
-    @SuppressWarnings("removal")
-    private void reproducirSonido(String archivoSonido) {
+        @SuppressWarnings("removal")
+        private void reproducirSonido(String archivoSonido) {
         try {
-
             url = Ventana.class.getResource(archivoSonido);
             musica = Applet.newAudioClip(url);
             musica.play();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+        }
 
-    public void movimiento(String direccion) {
+        public void movimiento(String direccion) {
         String directorio = "/Assets/";
         marianito = new Polygon();
-        // imprimir coor del Mario
-        // System.out.println("Mario: " + M.yp[0] + M.cayoFoso);
         switch (direccion) {
             case "Derecha":
-                manejarMovimientoHorizontal(true, directorio);
-                break;
+            manejarMovimientoHorizontal(true, directorio);
+            break;
             case "Izquierda":
-                manejarMovimientoHorizontal(false, directorio);
-                break;
+            manejarMovimientoHorizontal(false, directorio);
+            break;
             case "Parado":
-                manejarEstadoParado(false, directorio);
-                break;
+            manejarEstadoParado(false, directorio);
+            break;
             case "Parado2":
-                manejarEstadoParado(true, directorio);
-                break;
+            manejarEstadoParado(true, directorio);
+            break;
             case "Arriba":
-                manejarSalto(directorio);
-                break;
+            manejarSalto(directorio);
+            break;
             case "Abajo":
-                manejarCaida(directorio);
-                break;
+            manejarCaida(directorio);
+            break;
         }
 
         if (sec == 8) {
             sec = 0;
         }
         colision("");
-    }
+        }
 
-    private void manejarMovimientoHorizontal(boolean derecha, String directorio) {
+        private void manejarMovimientoHorizontal(boolean derecha, String directorio) {
         if (derecha) {
             choca[3] = false;
             if (!choca[2]) {
-                actualizarMovimiento(true, directorio);
+            actualizarMovimiento(true, directorio);
             } else {
-                asignarEstadoColision(directorio);
+            asignarEstadoColision(directorio);
             }
         } else {
             choca[2] = false;
             if (avance_x > 0) {
-                if (!choca[3] || (choca[3] && choca[2])) {
-                    actualizarMovimiento(false, directorio);
-                } else {
-                    asignarEstadoColision(directorio);
-                }
+            if (!choca[3] || (choca[3] && choca[2])) {
+                actualizarMovimiento(false, directorio);
+            } else {
+                asignarEstadoColision(directorio);
+            }
             }
         }
 
@@ -498,9 +477,9 @@ public class Ventana extends JPanel {
             M.encima = false;
             M.cayendo = true;
         }
-    }
+        }
 
-    private void actualizarMovimiento(boolean derecha, String directorio) {
+        private void actualizarMovimiento(boolean derecha, String directorio) {
         sec++;
         if (derecha) {
             M.izquierda = false;
@@ -519,11 +498,11 @@ public class Ventana extends JPanel {
         } else {
             asignarEstadoSalto(derecha, directorio);
         }
-    }
+        }
 
-    private void asignarEstadoAnimacion(int sec, boolean derecha, String directorio) {
+        private void asignarEstadoAnimacion(int sec, boolean derecha, String directorio) {
         int[][] coords = derecha ? new int[][] { M.xc1, M.xc3, M.xc2, M.xc4 }
-                : new int[][] { M.xc1_i, M.xc3_i, M.xc2_i, M.xc4_i };
+            : new int[][] { M.xc1_i, M.xc3_i, M.xc2_i, M.xc4_i };
         int[] fondos = derecha ? new int[] { 0, 4, 2, 6 } : new int[] { 1, 5, 3, 7 };
 
         int index = (sec - 1) / 2;
@@ -533,25 +512,25 @@ public class Ventana extends JPanel {
         url = Ventana.class.getResource(directorio + M.img_fondo[fondos[index]]);
         M.x_img = marianito.xpoints[1];
         M.icon = new ImageIcon(url).getImage();
-    }
+        }
 
-    private void asignarEstadoSalto(boolean derecha, String directorio) {
+        private void asignarEstadoSalto(boolean derecha, String directorio) {
         marianito.xpoints = derecha ? M.xs : M.xs_i;
         marianito.ypoints = derecha ? M.ys : M.ys_i;
         marianito.npoints = M.xs.length;
         url = Ventana.class.getResource(directorio + (derecha ? M.img_fondo[10] : M.img_fondo[11]));
         M.icon = new ImageIcon(url).getImage();
-    }
+        }
 
-    private void asignarEstadoColision(String directorio) {
+        private void asignarEstadoColision(String directorio) {
         marianito.xpoints = M.xp;
         marianito.ypoints = M.yp;
         marianito.npoints = M.xp.length;
         url = Ventana.class.getResource(directorio + M.img_fondo[8]);
         M.icon = new ImageIcon(url).getImage();
-    }
+        }
 
-    private void manejarEstadoParado(boolean izquierda, String directorio) {
+        private void manejarEstadoParado(boolean izquierda, String directorio) {
         sec = 0;
         marianito.xpoints = izquierda ? M.xp_i : M.xp;
         marianito.ypoints = izquierda ? M.yp_i : M.yp;
@@ -559,10 +538,9 @@ public class Ventana extends JPanel {
         url = Ventana.class.getResource(directorio + (izquierda ? M.img_fondo[9] : M.img_fondo[8]));
         M.icon = new ImageIcon(url).getImage();
         M.x_img = marianito.xpoints[0];
-    }
+        }
 
-    private void manejarSalto(String directorio) {
-
+        private void manejarSalto(String directorio) {
         if (!M.cayendo) {
             M.saltando = true;
             asignarEstadoSalto(M.derecha, directorio);
@@ -571,18 +549,18 @@ public class Ventana extends JPanel {
             M.salto();
 
             if (altura_salto == -10) {
-                reproducirSonido(directorio + "salto.wav");
+            reproducirSonido(directorio + "salto.wav");
             }
             if (altura_salto == -200) {
-                choca[2] = false;
-                choca[3] = false;
-                M.saltando = false;
-                M.cayendo = true;
+            choca[2] = false;
+            choca[3] = false;
+            M.saltando = false;
+            M.cayendo = true;
             }
         }
-    }
+        }
 
-    private void manejarCaida(String directorio) {
+        private void manejarCaida(String directorio) {
         asignarEstadoSalto(M.derecha, directorio);
         avance_y += M.vel_salto;
         altura_salto += M.vel_salto;
@@ -595,11 +573,11 @@ public class Ventana extends JPanel {
             choca[3] = false;
             movimiento("Parado");
         }
-    }
+        }
 
-    @SuppressWarnings("removal")
-    @Override
-    public void paint(Graphics g) {
+        @SuppressWarnings("removal")
+        @Override
+        public void paint(Graphics g) {
         super.paint(g);
 
         sec2++;
