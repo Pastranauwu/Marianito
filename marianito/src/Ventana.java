@@ -180,7 +180,7 @@ public class Ventana extends JPanel {
         for (int i = 0; i < 5; i++) {
             Lista_Bloques.add(new Bloques("Ladrillo_plano_azul", baseX + (i * 60), baseY - (i * alturaEscalon), false));
         }
-
+        
         Lista_Bloques.add(new Bloques("Ladrillo_azul", 600, 300, false));
         Lista_Bloques.add(new Bloques("Ladrillo_azul", 660, 300, false));
         Lista_Bloques.add(new Bloques("Ladrillo_azul", 720, 300, false));
