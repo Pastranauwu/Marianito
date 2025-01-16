@@ -39,6 +39,16 @@ public class Enemigos {
             img_fondo = "/Assets/koopa1.png";
             img_M = 41;
         }
+        if(nombre.equals("koopa_volador")){
+            ancho = 48;
+            alto = 78;
+            this.x = cx;
+            this.y = cy;
+            this.tipo =  nombre;
+            img_fondo = "/Assets/koopa_volador1.png";
+            img_M = 41;
+        }
+
         if (nombre.equals("goomba_azul")){
             ancho = alto = 48;
             this.x = cx;
@@ -88,8 +98,13 @@ public class Enemigos {
         }
     }
 
+
+    public void movCircular(){
+        
+    }
+
     public void movVertical() {
-        if (tipo.equals("planta") || tipo.equals("koopa")) {
+        if (tipo.equals("planta") || tipo.equals("koopa_volador")) {
             if (subiendo) {
                 y -= 2; // Velocidad de movimiento hacia arriba
                 if (y <= limiteSuperior) {

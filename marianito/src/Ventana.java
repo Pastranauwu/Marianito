@@ -43,7 +43,7 @@ public class Ventana extends JPanel {
     int tiempo = 1000;
     boolean banderaTocada = false;
     long inicio = 0;
-    int nivel = 4;
+    int nivel = 3;
     boolean enPlat = false;
     String img_fondo = "/Assets/mundo" + nivel + ".png";
     String cancion = "/Assets/mundo" + nivel + ".wav";
@@ -239,7 +239,7 @@ public class Ventana extends JPanel {
         Lista_Enemigos.add(new Enemigos("goomba", 1000, 230));
         Lista_Enemigos.add(new Enemigos("goomba", 1000, 200));
         Lista_Enemigos.add(new Enemigos("goomba", 1000, 170));
-        Lista_Enemigos.add(new Enemigos("koopa", 300, 150));
+        Lista_Enemigos.add(new Enemigos("koopa_volador", 300, 150));
     }
 
     private void cargarPoderes2() {
@@ -742,7 +742,7 @@ public class Ventana extends JPanel {
         for (int i = 0; i < Lista_Enemigos.size(); i++) {
             int d = 1;
             if (!Lista_Enemigos.get(i).muerto) {
-                if (nivel == 3 && Lista_Enemigos.get(i).tipo.equals("koopa")) {
+                if (nivel == 3 && Lista_Enemigos.get(i).tipo.equals("koopa_volador")) {
                     Enemigos enemigo = Lista_Enemigos.get(i);
                     enemigo.movVertical();
                 } else {
@@ -784,6 +784,12 @@ public class Ventana extends JPanel {
                                 Lista_Enemigos.get(i).derecha = false;
                                 Lista_Enemigos.get(i).izquierda = true;
                             } else {
+                                if ( Lista_Enemigos.get(i).tipo.equals("browser")) {
+                                    Random r = new Random();
+                                    if (r.nextBoolean()) {
+                                        Lista_Enemigos.add(new Enemigos("bomba", Lista_Enemigos.get(i).x, 250));
+                                    }
+                                }
                                 Lista_Enemigos.get(i).derecha = true;
                                 Lista_Enemigos.get(i).izquierda = false;
                             }
@@ -805,7 +811,7 @@ public class Ventana extends JPanel {
                     Enemigos enemigo = Lista_Enemigos.get(i);
                     enemigo.movVertical();
                 } else {
-                    if (!(nivel == 3 && Lista_Enemigos.get(i).tipo.equals("koopa"))) {
+                    if (!(nivel == 3 && Lista_Enemigos.get(i).tipo.equals("koopa_volador"))) {
                         Lista_Enemigos.get(i).mov();
                     }
                 }
@@ -825,7 +831,9 @@ public class Ventana extends JPanel {
                         Lista_Enemigos.get(i).muerto = true;
                         // obtener tipo de enemigo
                         String tipo = Lista_Enemigos.get(i).tipo;
-                        reproducirSonidoMuerteEnemigo(tipo);
+                        if (!(Lista_Enemigos.get(i).tipo.equals("bala")||Lista_Enemigos.get(i).tipo.equals("planta"))) {
+                            reproducirSonidoMuerteEnemigo(tipo);
+                        }
                     }
                 }
             } else {
