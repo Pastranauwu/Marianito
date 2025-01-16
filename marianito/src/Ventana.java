@@ -43,8 +43,9 @@ public class Ventana extends JPanel {
     int tiempo = 1000;
     boolean banderaTocada = false;
     long inicio = 0;
-    int nivel = 3;
+    int nivel = 1;
     boolean enPlat = false;
+    int angulo =0;
     String img_fondo = "/Assets/mundo" + nivel + ".png";
     String cancion = "/Assets/mundo" + nivel + ".wav";
     boolean signivel = false;
@@ -271,6 +272,10 @@ public class Ventana extends JPanel {
 
     private void cargarEnemigos4() {
         Lista_Enemigos.add(new Enemigos("goomba", 800, 400));
+        Lista_Enemigos.add(new Enemigos("bola", 750, 220, 70));
+        Lista_Enemigos.add(new Enemigos("bola", 750, 220, 100));
+        Lista_Enemigos.add(new Enemigos("bola", 750, 220, 130));
+        Lista_Enemigos.add(new Enemigos("bola", 750, 220, 160));
         Lista_Enemigos.add(new Enemigos("planta", 1030, 370));
         Lista_Enemigos.add(new Enemigos("koopa", 900, 375));
         Lista_Enemigos.add(new Enemigos("browser", 1750, 320));
@@ -278,7 +283,6 @@ public class Ventana extends JPanel {
     
     private void cargarBloques4() {
         Lista_Bloques.add(new Bloques("Ladrillo_plano", 760, 178, false));
-        Lista_Bloques.add(new Bloques("Ladrillo_plano", 820, 178, false));
         Lista_Bloques.add(new Bloques("Tuberia", 1000, 307, true));
         Lista_Bloques.add(new Bloques("Ladrillo", 1200, 178, false));
         Lista_Bloques.add(new Bloques("Ladrillo", 100, 178, true));
@@ -812,7 +816,13 @@ public class Ventana extends JPanel {
                     enemigo.movVertical();
                 } else {
                     if (!(nivel == 3 && Lista_Enemigos.get(i).tipo.equals("koopa_volador"))) {
-                        Lista_Enemigos.get(i).mov();
+                        if ( Lista_Enemigos.get(i).tipo.equals("bola")) {
+                            // System.out.println("Soy bola entre para moverme");
+                            Lista_Enemigos.get(i).movCircular(780, 200, Lista_Enemigos.get(i).radio, angulo );
+                            angulo = angulo +1;
+                        }else{
+                            Lista_Enemigos.get(i).mov();
+                        }
                     }
                 }
 
@@ -839,7 +849,7 @@ public class Ventana extends JPanel {
             } else {
                 Lista_Enemigos.get(i).img_fondo = "/Assets/" + Lista_Enemigos.get(i).tipo + "_M.png";
                 url = Ventana.class.getResource(Lista_Enemigos.get(i).img_fondo);
-                if (Lista_Enemigos.get(i).tipo.equals("planta") || Lista_Enemigos.get(i).tipo.equals("bomba")) {
+                if (Lista_Enemigos.get(i).tipo.equals("planta") || Lista_Enemigos.get(i).tipo.equals("bomba")|| Lista_Enemigos.get(i).tipo.equals("bola") ) {
                     url = Ventana.class.getResource("muerte.wav");
                     musica = Applet.newAudioClip(url);
                     musica.play();

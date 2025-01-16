@@ -16,10 +16,24 @@ public class Enemigos {
     int img_M;
     String img_fondo;
     String tipo;
+    int radio = 0;
     boolean subiendo;
     int limiteSuperior= 240;
     int limiteInferior= 380;
     
+    public Enemigos(String nombre, int cx, int cy, int radio){
+        if (nombre.equals("bola")) {
+            ancho = 2;
+            alto = 2;
+            this.radio = radio;
+            this.x = cx;
+            this.y = cy;
+            this.tipo =  nombre;
+            img_fondo = "/Assets/bola1.png";
+            img_M = 2;
+        }
+    }
+
     public Enemigos(String nombre, int cx, int cy){
         
         if(nombre.equals("goomba")){
@@ -98,11 +112,11 @@ public class Enemigos {
         }
     }
 
-
-    public void movCircular(){
-        
+    public void movCircular(int centerX, int centerY, double radius, double angle) {
+        double angleInRadians = angle * Math.PI / 360;
+            x = (int)(centerX + radius * Math.cos(angleInRadians));
+            y = (int)(centerY + radius * Math.sin(angleInRadians));
     }
-
     public void movVertical() {
         if (tipo.equals("planta") || tipo.equals("koopa_volador")) {
             if (subiendo) {
