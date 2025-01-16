@@ -17,7 +17,7 @@ public class Enemigos {
     String img_fondo;
     String tipo;
     boolean subiendo;
-    int limiteSuperior= 235;
+    int limiteSuperior= 240;
     int limiteInferior= 380;
     
     public Enemigos(String nombre, int cx, int cy){
@@ -56,6 +56,26 @@ public class Enemigos {
             this.tipo =  nombre;
             img_fondo = "/Assets/planta1.png";
             img_M = 2;
+        }
+
+        if (nombre.equals("browser")) {
+            ancho = 48;
+            alto = 78;
+            this.x = cx;
+            this.y = cy;
+            this.tipo =  nombre;
+            img_fondo = "/Assets/browser1.png";
+            img_M = 2;
+        }
+
+        if (nombre.equals("bomba")) {
+            ancho = 48;
+            alto = 78;
+            this.x = cx;
+            this.y = cy;
+            this.tipo =  nombre;
+            img_fondo = "/Assets/bomba1.png";
+            img_M = 1;
         }
     }
     
