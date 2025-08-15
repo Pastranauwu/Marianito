@@ -1,8 +1,7 @@
 package src;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
 import java.awt.Font;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Polygon;
@@ -19,6 +18,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import javax.sound.sampled.Clip;
 
 public class Ventana extends JPanel {
     LinkedList<Bloques> Lista_Bloques;
@@ -27,8 +28,7 @@ public class Ventana extends JPanel {
     Marianito M;
     Polygon marianito;
     boolean termina = false;
-    @SuppressWarnings("removal")
-    AudioClip musica;
+    Clip bgmClip;
     boolean choca[];
     int avance_x;
     int altura_salto = 0;
@@ -50,9 +50,21 @@ public class Ventana extends JPanel {
     String cancion = "/Assets/mundo" + nivel + ".wav";
     boolean signivel = false;
     static boolean pantallaCarga = false;
+    // Transición de nivel sin hilos bloqueantes
+    private long loadingUntilMs = 0L;
+    private boolean pendingLevelAdvance = false;
+    private boolean gameOverHandled = false;
+    private static final int TOLERANCIA = 12; // tolerancia de píxeles para colisiones verticales
+    // Lógica a paso fijo (~47ms como antes) para no acelerar a 60 FPS
+    private static final int LOGIC_DT_MS = 47;
+    private long lastLogicUpdateMs = 0L;
+    // Menu y pausa
+    boolean inMenu = true;
+    boolean paused = false;
+    boolean gameWon = false;
+    private static final int MAX_NIVEL = 4;
     // boolean enPlataforma = true;
 
-    @SuppressWarnings("removal")
     public void reset() {
         choca = new boolean[4];
         choca[0] = false;
@@ -62,8 +74,8 @@ public class Ventana extends JPanel {
         Lista_Bloques = new LinkedList<>();
         Lista_Enemigos = new LinkedList<>();
         Lista_Poderes = new LinkedList<>();
-        url = Ventana.class.getResource(this.img_fondo);
-        icons = new Image[3];
+    url = Ventana.class.getResource(this.img_fondo);
+    icons = new Image[3];
         banderaTocada = false;
         // img_fondo = "/Assets/mundo1.png";
 
@@ -76,12 +88,14 @@ public class Ventana extends JPanel {
         avance_y = 0;
         sec = 0;
 
-        // resetear cancion
+        // Música de fondo con Clip (no bloqueante)
         if (this.signivel) {
-            this.musica.stop();
-            this.musica = Applet.newAudioClip(Ventana.class.getResource(this.cancion));
-            this.musica.loop();
+            // cambiar música de nivel
+            SoundManager.stop(bgmClip);
+            bgmClip = SoundManager.loop(this.cancion);
             this.signivel = false;
+        } else if (bgmClip == null) {
+            bgmClip = SoundManager.loop(cancion);
         }
 
         if (nivel == 1) {
@@ -100,14 +114,14 @@ public class Ventana extends JPanel {
             cargarEnemigos3();
             cargarPoderes3();
             imagenes_Fondo();
-        } else if (nivel == 4) {
+    } else if (nivel == 4) {
             cargarBloques4();
             cargarEnemigos4();
             cargarPoderes();
             imagenes_Fondo();
-        } else {
-            JOptionPane.showMessageDialog(null, "¡Felicidades! Has completado el juego");
-            System.exit(0);
+    } else if (nivel > MAX_NIVEL) {
+            // No mostrar JOptionPane aquí (se invoca desde paint y puede romperse)
+            gameWon = true;
         }
 
     }
@@ -122,10 +136,8 @@ public class Ventana extends JPanel {
         M = new Marianito();
         marianito = new Polygon();
 
-        URL url2 = Ventana.class.getResource(cancion);
-        musica = Applet.newAudioClip(url2);
-        musica.loop();
-        musica.play();
+    // Música de fondo con Clip (no bloqueante)
+    bgmClip = SoundManager.loop(cancion);
         choca = new boolean[10];
         avance_x = 0;
         avance_y = 0;
@@ -313,28 +325,35 @@ public class Ventana extends JPanel {
     }
 
     public void imagenes_Fondo() {
-        icons[0] = new ImageIcon(url).getImage();
-        icons[1] = new ImageIcon(url).getImage();
-        icons[2] = new ImageIcon(url).getImage();
+        if (url == null) {
+            url = Ventana.class.getResource(this.img_fondo);
+        }
+    if (url != null) {
+    icons[0] = AssetCache.get(this.img_fondo);
+        icons[1] = icons[0];
+        icons[2] = icons[0];
+        }
         for (int i = 0; i < Lista_Bloques.size(); i++) {
-            url = Ventana.class.getResource(Lista_Bloques.get(i).img_fondo);
-            Lista_Bloques.get(i).icon = new ImageIcon(url).getImage();
+            if (Lista_Bloques.get(i).img_fondo != null) {
+                Lista_Bloques.get(i).icon = AssetCache.get(Lista_Bloques.get(i).img_fondo);
+            }
         }
         for (int i = 0; i < Lista_Enemigos.size(); i++) {
-            url = Ventana.class.getResource(Lista_Enemigos.get(i).img_fondo);
-            Lista_Enemigos.get(i).icon = new ImageIcon(url).getImage();
+            if (Lista_Enemigos.get(i).img_fondo != null) {
+                Lista_Enemigos.get(i).icon = AssetCache.get(Lista_Enemigos.get(i).img_fondo);
+            }
         }
         for (int i = 0; i < Lista_Poderes.size(); i++) {
-            url = Ventana.class.getResource(Lista_Poderes.get(i).img_fondo);
-            Lista_Poderes.get(i).icon = new ImageIcon(url).getImage();
+            if (Lista_Poderes.get(i).img_fondo != null) {
+                Lista_Poderes.get(i).icon = AssetCache.get(Lista_Poderes.get(i).img_fondo);
+            }
         }
-        url = Ventana.class.getResource("/Assets/" + M.img_fondo[8]);
-        M.icon = new ImageIcon(url).getImage();
+        M.icon = AssetCache.get("/Assets/" + M.img_fondo[8]);
     }
 
-    @SuppressWarnings("removal")
     void colision(String d) {
-        for (Bloques bloque : Lista_Bloques) {
+        for (int idx = 0; idx < Lista_Bloques.size(); idx++) {
+            Bloques bloque = Lista_Bloques.get(idx);
             if (bloque.tipo.equals("Tuberia")) {
                 if (verificarColisionHorizontal(bloque) || verificarColisionVerticalTuberia(bloque)) {
                     break;
@@ -348,7 +367,7 @@ public class Ventana extends JPanel {
                 if (verificarColisionHorizontal(bloque) || verificarColisionVerticalBloques(bloque)) {
                     break;
                 }
-                if (M.x_img > 120 && M.yp[0] == 448) {
+                if (M.x_img > 120 && M.yp[0] >= 440 && M.yp[0] <= 456) {
                     M.cayendo = true;
                     M.caida();
                 }
@@ -360,31 +379,14 @@ public class Ventana extends JPanel {
             if (bloque.tipo.equals("Bandera") && !this.banderaTocada) {
                 if (marianito.intersects(bloque.x - avance_x, bloque.y, bloque.ancho, bloque.largo)) {
                     // System.out.println("tocaste bandera");
-                    this.banderaTocada = true;
-                    this.musica.stop();
-                    reproducirSonido("/Assets/terminado.wav");
-
-                    // Activar la pantalla de carga en un hilo separado
-                    new Thread(() -> {
-                        try {
-                            pantallaCarga = true; // Activar pantalla de carga
-                            SwingUtilities.invokeLater(this::repaint); // Redibujar en el hilo de eventos de Swing
-                            Thread.sleep(1200); // Esperar 2 segundos para mostrar la pantalla de carga
-                            this.signivel = true;
-                            this.nivel += 1;
-                            this.img_fondo = "/Assets/mundo" + this.nivel + ".png";
-                            this.cancion = "/Assets/mundo" + this.nivel + ".wav";
-                            this.musica = Applet.newAudioClip(Ventana.class.getResource(this.cancion));
-                            this.reset();
-                            Thread.sleep(3000); 
-                            
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } finally {
-                            pantallaCarga = false; // Desactivar pantalla de carga
-                            SwingUtilities.invokeLater(this::repaint); // Redibujar en el hilo de eventos de Swing
-                        }
-                    }).start();
+        this.banderaTocada = true;
+            SoundManager.stop(bgmClip);
+                    SoundManager.play("/Assets/terminado.wav");
+            // Activar pantalla de carga y programar el avance de nivel sin hilos bloqueantes
+            pantallaCarga = true;
+            pendingLevelAdvance = true;
+            loadingUntilMs = System.currentTimeMillis() + 1200; // 1.2s de carga
+            SwingUtilities.invokeLater(this::repaint);
                 }
             }
         }
@@ -403,13 +405,20 @@ public class Ventana extends JPanel {
     }
 
     private boolean verificarColisionVerticalTuberia(Bloques bloque) {
+        Rectangle pb = marianito.getBounds();
         if (marianito.intersects(bloque.x - avance_x, bloque.y - 10, bloque.ancho + 10, bloque.largo + 10)) {
-            if (M.saltando && 448 + avance_y == bloque.y + 70) {
+            int playerTop = pb.y;
+            int playerBottom = pb.y + pb.height;
+            int bloqueTop = bloque.y;
+            int bloqueBottom = bloque.y + bloque.largo;
+            // golpea por debajo de la tubería
+            if (M.saltando && Math.abs(playerTop - (bloqueBottom)) <= TOLERANCIA) {
                 M.saltando = false;
                 M.cayendo = true;
                 return true;
             }
-            if (M.cayendo && 448 + avance_y - 11 == bloque.y - 10) {
+            // aterriza sobre la tubería
+            if (M.cayendo && Math.abs(playerBottom - bloqueTop) <= TOLERANCIA) {
                 M.cayendo = false;
                 M.encima = true;
                 altura_salto = 0;
@@ -420,12 +429,18 @@ public class Ventana extends JPanel {
     }
 
     private boolean verificarColisionVerticalBloques(Bloques bloque) {
+        Rectangle pb = marianito.getBounds();
         if (marianito.intersects(bloque.x - avance_x, bloque.y - 10, bloque.ancho, bloque.largo + 10)) {
-            if (M.saltando && 448 + avance_y - 60 == bloque.y + 60) {
+            int playerTop = pb.y;
+            int playerBottom = pb.y + pb.height;
+            int bloqueTop = bloque.y;
+            // golpea por debajo del bloque
+            if (M.saltando && Math.abs(playerTop - (bloqueTop + bloque.largo)) <= TOLERANCIA) {
                 procesarColisionBloque(bloque);
                 return true;
             }
-            if (M.cayendo && M.yp[0] == bloque.y) {
+            // aterriza encima del bloque
+            if (M.cayendo && Math.abs(playerBottom - bloqueTop) <= TOLERANCIA) {
                 M.cayendo = false;
                 M.encima = true;
                 altura_salto = 0;
@@ -451,7 +466,12 @@ public class Ventana extends JPanel {
                 reproducirSonido("/Assets/powerup_appears.wav");
             } else {
                 reproducirSonido(ruta + "ladrillo.wav");
-                Lista_Bloques.remove(bloque);
+                // Desactivar bloque sin eliminarlo para evitar problemas al iterar
+                bloque.ancho = 0;
+                bloque.largo = 0;
+                bloque.img_fondo = null;
+                bloque.icon = null;
+                bloque.tipo = "";
             }
         }
         choca[0] = true;
@@ -463,18 +483,14 @@ public class Ventana extends JPanel {
         bloque.icon = new ImageIcon(getClass().getResource("/Assets/" + nuevaImagen)).getImage();
     }
 
-    @SuppressWarnings("removal")
     private void reproducirSonido(String archivoSonido) {
-        try {
-            URL url2 = Ventana.class.getResource(archivoSonido);
-            AudioClip musica2 = Applet.newAudioClip(url2);
-            musica2.play();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    SoundManager.play(archivoSonido);
     }
 
     public void movimiento(String direccion) {
+        if (inMenu || paused) {
+            return; // no mover mientras está en menú o pausa
+        }
         String directorio = "/Assets/";
         marianito = new Polygon();
         switch (direccion) {
@@ -625,15 +641,42 @@ public class Ventana extends JPanel {
         }
     }
 
-    @SuppressWarnings("removal")
     @Override
     public void paint(Graphics g) {
         super.paint(g);
 
-        sec2++;
-        cont += 50;
-        if (cont % 1000 == 0) {
-            tiempo--;
+        // Menú inicial
+        if (inMenu) {
+            if (icons == null || icons.length < 1 || icons[0] == null) {
+                URL bg = Ventana.class.getResource(this.img_fondo);
+                if (bg != null) {
+                    icons = new Image[] { new ImageIcon(bg).getImage(), new ImageIcon(bg).getImage(), new ImageIcon(bg).getImage() };
+                }
+            }
+            if (icons != null && icons[0] != null) {
+                g.drawImage(icons[0], 0, 0, getWidth(), getHeight(), null);
+            } else {
+                g.setColor(Color.BLACK);
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
+            g.setColor(new Color(0,0,0,150));
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("SansSerif", Font.BOLD, 48));
+            g.drawString("MARIANITO", getWidth()/2 - 150, getHeight()/2 - 60);
+            g.setFont(new Font("SansSerif", Font.PLAIN, 22));
+            g.drawString("Enter: Iniciar", getWidth()/2 - 90, getHeight()/2 - 10);
+            g.drawString("Flechas: Mover | Up: Saltar | P: Pausa | Esc: Salir", getWidth()/2 - 240, getHeight()/2 + 20);
+            return;
+        }
+
+        boolean doLogic = !paused && shouldUpdateLogic();
+        if (doLogic) {
+            sec2++;
+            cont += 50;
+            if (cont % 1000 == 0) {
+                tiempo--;
+            }
         }
         if (M.yp[0] >= 808) {
             vidas--;
@@ -642,10 +685,38 @@ public class Ventana extends JPanel {
                 choca[0] = false;
             }
         }
-        // System.out.println(pantallaCarga);
+    // Manejo de pantalla de carga y transición de nivel sin dormir hilos
         if (pantallaCarga) {
-            g.drawImage(new ImageIcon(getClass().getResource("/Assets/cargando.gif")).getImage(), 0, 0, null);
-            return;
+            if (pendingLevelAdvance && System.currentTimeMillis() >= loadingUntilMs) {
+                // Avanzar de nivel
+                pendingLevelAdvance = false;
+                banderaTocada = false;
+                signivel = true;
+                nivel += 1;
+                img_fondo = "/Assets/mundo" + nivel + ".png";
+                cancion = "/Assets/mundo" + nivel + ".wav";
+                // música se gestiona con SoundManager en reset()
+                this.reset();
+                // Mostrar un poco más la pantalla de carga para suavizar
+                loadingUntilMs = System.currentTimeMillis() + 300; // 0.3s adicional opcional
+            }
+            if (System.currentTimeMillis() < loadingUntilMs) {
+                g.drawImage(new ImageIcon(getClass().getResource("/Assets/cargando.gif")).getImage(), 0, 0, null);
+                return;
+            } else {
+                pantallaCarga = false; // Termina la pantalla de carga
+            }
+        }
+        // Asegurar fondo inicializado para evitar NPE
+        if (icons == null || icons.length < 3 || icons[0] == null) {
+            Image bg = AssetCache.get(this.img_fondo);
+            if (bg != null) {
+                icons = new Image[] { bg, bg, bg };
+            } else {
+                g.setColor(Color.BLACK);
+                g.fillRect(0, 0, getWidth(), getHeight());
+                return;
+            }
         }
         int anchoImagen = icons[0].getWidth(null);
         int totalAncho = getWidth() / anchoImagen + 2;
@@ -669,8 +740,7 @@ public class Ventana extends JPanel {
         g.drawString("" + tiempo, 900, 60);
 
         for (int i = 0; i < Lista_Poderes.size(); i++) {
-            url = Ventana.class.getResource(Lista_Poderes.get(i).img_fondo);
-            Lista_Poderes.get(i).icon = new ImageIcon(url).getImage();
+            Lista_Poderes.get(i).icon = AssetCache.get(Lista_Poderes.get(i).img_fondo);
             g.drawImage(Lista_Poderes.get(i).icon, Lista_Poderes.get(i).x - avance_x, Lista_Poderes.get(i).y, null);
 
             Rectangle re = new Rectangle(Lista_Poderes.get(i).x - avance_x, Lista_Poderes.get(i).y,
@@ -678,16 +748,15 @@ public class Ventana extends JPanel {
             // verificar colisión con marianito con el hongo
             Rectangle personaje = new Rectangle(M.xp[0], M.yp[0], marianito.getBounds().width,
                     marianito.getBounds().height);
-            if (re.intersects(personaje)) {
-                
-                url = Ventana.class.getResource("/Assets/vida.wav");
-                AudioClip sonido = Applet.newAudioClip(url);
-                sonido.play();
-                // incrementar vidas
-                vidas++;
-                // eliminar hongo
-                Lista_Poderes.remove(i);
-            }
+            if (doLogic) {
+                if (re.intersects(personaje)) {
+                    SoundManager.play("/Assets/vida.wav");
+                    vidas++;
+                    Lista_Poderes.remove(i);
+                    // importante: ajustar índice
+                    i--;
+                    continue;
+                }
             for (int j = 0; j < Lista_Bloques.size(); j++) {
                 if (Lista_Bloques.get(j).tipo.equals("Tuberia")) {
                     if (re.intersects(Lista_Bloques.get(j).x2 - avance_x, Lista_Bloques.get(j).y2,
@@ -733,12 +802,11 @@ public class Ventana extends JPanel {
                 if (marianito.intersects(re)) {
                     if (Lista_Poderes.get(i).img_fondo.equals("hongo.png")) {
                         vidas++;
-                        URL url2 = Ventana.class.getResource("/Assets/vida.wav");
-                        AudioClip musica2 = Applet.newAudioClip(url2);
-                        musica2.play();
+                        SoundManager.play("/Assets/vida.wav");
                         Lista_Poderes.remove(i);
                     }
                 }
+            }
             }
 
         }
@@ -747,8 +815,10 @@ public class Ventana extends JPanel {
             int d = 1;
             if (!Lista_Enemigos.get(i).muerto) {
                 if (nivel == 3 && Lista_Enemigos.get(i).tipo.equals("koopa_volador")) {
-                    Enemigos enemigo = Lista_Enemigos.get(i);
-                    enemigo.movVertical();
+                    if (doLogic) {
+                        Enemigos enemigo = Lista_Enemigos.get(i);
+                        enemigo.movVertical();
+                    }
                 } else {
                     if (Lista_Enemigos.get(i).tipo.equals("koopa")) {
                         if (Lista_Enemigos.get(i).derecha) {
@@ -759,21 +829,33 @@ public class Ventana extends JPanel {
                     }
                 }
 
-                if (sec2 <= 7) {
-                    Lista_Enemigos.get(i).img_fondo = "/Assets/" + Lista_Enemigos.get(i).tipo + (d + ".png");
-                    url = Ventana.class.getResource(Lista_Enemigos.get(i).img_fondo);
-                    Lista_Enemigos.get(i).icon = new ImageIcon(url).getImage();
-                } else {
-                    if (!Lista_Enemigos.get(i).tipo.equals("bomba")) {
-                        Lista_Enemigos.get(i).img_fondo = "/Assets/" + Lista_Enemigos.get(i).tipo + (d + 1) + ".png";
-                    }
-                    url = Ventana.class.getResource(Lista_Enemigos.get(i).img_fondo);
-                    Lista_Enemigos.get(i).icon = new ImageIcon(url).getImage();
-                }
-                g.drawImage(Lista_Enemigos.get(i).icon, Lista_Enemigos.get(i).x - avance_x, Lista_Enemigos.get(i).y,
-                        null);
+                String tipo = Lista_Enemigos.get(i).tipo;
+        int frameBase = 1;
+
+        if ("koopa".equals(tipo)) {
+            // koopa normal: 1-2 derecha, 3-4 izquierda
+            frameBase = Lista_Enemigos.get(i).derecha ? 1 : 3;
+        } else if ("koopa_volador".equals(tipo)) {
+            // volador: si solo tienes 1 y 2, deja esto en 1
+            frameBase = 1;
+            // Si además tienes 3/4 para mirar a la izquierda, usa:
+            // frameBase = Lista_Enemigos.get(i).derecha ? 1 : 3;
+        } else if ("goomba".equals(tipo) || "goomba_azul".equals(tipo)) {
+            frameBase = 1; // 1-2
+        } else if ("bomba".equals(tipo)) {
+            frameBase = 1; // bomba no alterna si no tienes 2 frames
+        }
+
+        int frame = (sec2 <= 7) ? frameBase : frameBase + 1;
+        String path = "/Assets/" + tipo + frame + ".png";
+        Lista_Enemigos.get(i).img_fondo = path;
+        Lista_Enemigos.get(i).icon = AssetCache.get(path);
+
+        g.drawImage(Lista_Enemigos.get(i).icon, Lista_Enemigos.get(i).x - avance_x, Lista_Enemigos.get(i).y, null);
+                        
                 Rectangle re = new Rectangle(Lista_Enemigos.get(i).x - avance_x, Lista_Enemigos.get(i).y,
                         Lista_Enemigos.get(i).alto, Lista_Enemigos.get(i).ancho);
+                if (doLogic) {
                 for (int j = 0; j < Lista_Bloques.size(); j++) {
                     if (Lista_Bloques.get(j).tipo.equals("Tuberia")) {
                         if (re.intersects(Lista_Bloques.get(j).x2 - avance_x, Lista_Bloques.get(j).y2,
@@ -811,36 +893,35 @@ public class Ventana extends JPanel {
                         break;
                     }
                 }
-                if (Lista_Enemigos.get(i).tipo.equals("planta")) {
-                    Enemigos enemigo = Lista_Enemigos.get(i);
-                    enemigo.movVertical();
-                } else {
-                    if (!(nivel == 3 && Lista_Enemigos.get(i).tipo.equals("koopa_volador"))) {
-                        if ( Lista_Enemigos.get(i).tipo.equals("bola")) {
-                            // System.out.println("Soy bola entre para moverme");
-                            Lista_Enemigos.get(i).movCircular(780, 200, Lista_Enemigos.get(i).radio, angulo );
-                            angulo = angulo +1;
-                        }else{
-                            Lista_Enemigos.get(i).mov();
+                }
+                if (doLogic) {
+                    if (Lista_Enemigos.get(i).tipo.equals("planta")) {
+                        Enemigos enemigo = Lista_Enemigos.get(i);
+                        enemigo.movVertical();
+                    } else {
+                        if (!(nivel == 3 && Lista_Enemigos.get(i).tipo.equals("koopa_volador"))) {
+                            if ( Lista_Enemigos.get(i).tipo.equals("bola")) {
+                                Lista_Enemigos.get(i).movCircular(780, 200, Lista_Enemigos.get(i).radio, angulo );
+                                angulo = (angulo + 2) % 360;
+                            } else {
+                                Lista_Enemigos.get(i).mov();
+                            }
                         }
                     }
                 }
 
-                if (marianito.intersects(Lista_Enemigos.get(i).x - avance_x, Lista_Enemigos.get(i).y, 48, 48)) {
+                if (doLogic && marianito.intersects(Lista_Enemigos.get(i).x - avance_x, Lista_Enemigos.get(i).y, 48, 48)) {
                     if (avance_y == 0) {
-                        url = Ventana.class.getResource("muerte.wav");
-                        musica = Applet.newAudioClip(url);
-                        musica.play();
+                        SoundManager.play("/Assets/muerte.wav");
                         vidas--;
                         if (vidas == 0) {
                             termina = true;
-                            this.musica.stop();
+                            SoundManager.stop(bgmClip);
                         }
                         this.reset();
                     } else {
                         Lista_Enemigos.get(i).muerto = true;
                         // obtener tipo de enemigo
-                        String tipo = Lista_Enemigos.get(i).tipo;
                         if (!(Lista_Enemigos.get(i).tipo.equals("bala")||Lista_Enemigos.get(i).tipo.equals("planta"))) {
                             reproducirSonidoMuerteEnemigo(tipo);
                         }
@@ -850,15 +931,15 @@ public class Ventana extends JPanel {
                 Lista_Enemigos.get(i).img_fondo = "/Assets/" + Lista_Enemigos.get(i).tipo + "_M.png";
                 url = Ventana.class.getResource(Lista_Enemigos.get(i).img_fondo);
                 if (Lista_Enemigos.get(i).tipo.equals("planta") || Lista_Enemigos.get(i).tipo.equals("bomba")|| Lista_Enemigos.get(i).tipo.equals("bola") ) {
-                    url = Ventana.class.getResource("muerte.wav");
-                    musica = Applet.newAudioClip(url);
-                    musica.play();
-                    vidas--;
-                    if (vidas == 0) {
-                        termina = true;
-                        this.musica.stop();
+                    if (doLogic) {
+                        SoundManager.play("/Assets/muerte.wav");
+                        vidas--;
+                        if (vidas == 0) {
+                            termina = true;
+                            SoundManager.stop(bgmClip);
+                        }
+                        this.reset();
                     }
-                    this.reset();
                 } else {
                     Lista_Enemigos.get(i).icon = new ImageIcon(url).getImage();
                     g.drawImage(Lista_Enemigos.get(i).icon, Lista_Enemigos.get(i).x - avance_x,
@@ -889,16 +970,21 @@ public class Ventana extends JPanel {
             } else if (Lista_Bloques.get(i).tipo.equals("Foso")) {
                 g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
             } else {
-                g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
+                if (Lista_Bloques.get(i).icon != null) {
+                    g.drawImage(Lista_Bloques.get(i).icon, Lista_Bloques.get(i).x - avance_x, Lista_Bloques.get(i).y, null);
+                }
             }
 
         }
 
-        if (M.saltando) {
-            movimiento("Arriba");
-        }
-        if (M.cayendo) {
-            movimiento("Abajo");
+        // Actualizar lógica de salto/caída sólo en ticks lógicos (no en pausa)
+        if (doLogic) {
+            if (M.saltando) {
+                movimiento("Arriba");
+            }
+            if (M.cayendo) {
+                movimiento("Abajo");
+            }
         }
 
         if (M.cayendo || M.saltando) {
@@ -912,28 +998,54 @@ public class Ventana extends JPanel {
             sec2 = 0;
         }
 
-    }
-
-    @SuppressWarnings("removal")
-    private void reproducirSonidoMuerteEnemigo(String tipo) {
-        URL url = Ventana.class.getResource("/Assets/muerte_" + tipo + ".wav");
-        if (url != null) {
-            // reproducir sonido de muerte del enemigo
-            AudioClip gover = Applet.newAudioClip(url);
-            gover.play();
-        } else {
-            System.err.println("No se pudo cargar el sonido de muerte del enemigo.");
+        // Overlay de pausa después de dibujar todo (mantiene visible a Mario y el mundo)
+        if (paused) {
+            g.setColor(new Color(0,0,0,140));
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("SansSerif", Font.BOLD, 36));
+            g.drawString("PAUSA", getWidth()/2 - 60, getHeight()/2);
+            return;
         }
+
+        // Pantalla final si se ganó el juego
+        if (gameWon) {
+            g.setColor(new Color(0,0,0,200));
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("SansSerif", Font.BOLD, 40));
+            g.drawString("¡Felicidades! Has completado el juego", getWidth()/2 - 360, getHeight()/2 - 20);
+            g.setFont(new Font("SansSerif", Font.PLAIN, 22));
+            g.drawString("Enter: Jugar de nuevo | Esc: Salir", getWidth()/2 - 190, getHeight()/2 + 20);
+        }
+
     }
 
-    @SuppressWarnings("removal")
+    private void reproducirSonidoMuerteEnemigo(String tipo) {
+    SoundManager.play("/Assets/muerte_" + tipo + ".wav");
+    }
+
+    // Controla si corresponde actualizar la lógica este frame (paso fijo ~47ms)
+    private boolean shouldUpdateLogic() {
+        long now = System.currentTimeMillis();
+        if (lastLogicUpdateMs == 0L) {
+            lastLogicUpdateMs = now;
+            return true;
+        }
+        if (now - lastLogicUpdateMs >= LOGIC_DT_MS) {
+            // avanzar en múltiplos de LOGIC_DT_MS para evitar drift
+            long steps = (now - lastLogicUpdateMs) / LOGIC_DT_MS;
+            lastLogicUpdateMs += steps * LOGIC_DT_MS;
+            return true;
+        }
+        return false;
+    }
+
     public static void main(String[] args) throws InterruptedException, Throwable {
-
-        Thread pintado;
-        Thread tecladoHilo; // Hilo para manejar las teclas
-
+        // Ejecutar todo en el EDT para evitar condiciones de carrera con Swing
         JFrame Ventana_Juego = new JFrame("Mario Bross");
         Ventana_Juego.setSize(1324, 615);
+        Ventana_Juego.setResizable(false);
         Ventana_Juego.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Ventana_Juego.setLocationRelativeTo(null);
         Ventana juego = new Ventana();
@@ -941,80 +1053,79 @@ public class Ventana extends JPanel {
         Ventana_Juego.add(juego);
         Ventana_Juego.setVisible(true);
 
-        // Inicializa la música de fondo
-        // URL url = Ventana.class.getResource(juego.cancion);
-        // juego.musica = Applet.newAudioClip(url);
-        // juego.musica.loop();
-        // juego.musica.play();
+        // Manejo del KeyListener directamente (EDT)
+        Ventana_Juego.addKeyListener((KeyListener) new KeyAdapter() {
+            String tecla;
 
-        // Manejo del KeyListener en un hilo aparte
-        tecladoHilo = new Thread(() -> {
-            Ventana_Juego.addKeyListener((KeyListener) new KeyAdapter() {
-                String tecla;
-
-                @Override
-                public void keyReleased(KeyEvent e) {
-                    tecla = KeyEvent.getKeyText(e.getKeyCode());
-                    if (tecla.equals("Derecha") || tecla.equals("Right")) {
-                        juego.movimiento("Parado");
-                    }
-                    if (tecla.equals("Izquierda") || tecla.equals("Left")) {
-                        juego.movimiento("Parado2");
-                    }
+            @Override
+            public void keyReleased(KeyEvent e) {
+                tecla = KeyEvent.getKeyText(e.getKeyCode());
+                if (tecla.equals("Derecha") || tecla.equals("Right")) {
+                    juego.movimiento("Parado");
                 }
-
-                @Override
-                public void keyPressed(KeyEvent e) {
-                    tecla = KeyEvent.getKeyText(e.getKeyCode());
-                    if (tecla.equals("Derecha") || tecla.equals("Right")) {
-                        juego.movimiento("Derecha");
-                    }
-                    if (tecla.equals("Izquierda") || tecla.equals("Left")) {
-                        juego.movimiento("Izquierda");
-                    }
-                    if (tecla.equals("Arriba") || tecla.equals("Up")) {
-                        juego.movimiento("Arriba");
-                    }
+                if (tecla.equals("Izquierda") || tecla.equals("Left")) {
+                    juego.movimiento("Parado2");
                 }
-            });
-        });
-        tecladoHilo.start(); // Inicia el hilo para manejar las teclas
+            }
 
-        // Hilo para el pintado de la ventana
-        pintado = new Thread(() -> {
-            while (true) {
-                if (!juego.termina) {
-                    juego.repaint();
-                    try {
-                        Thread.sleep(47);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                } else {
-                    try {
-                        URL url2 = Ventana.class.getResource("/Assets/gameover.wav");
-                        juego.musica.stop();
-                        juego.musica = Applet.newAudioClip(url2);
-                        juego.musica.play();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    Object[] opciones = { "Si", "No" };
-                    int n = JOptionPane.showOptionDialog(null, "¿Quieres volver a jugar?", "Fin del juego",
-                            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones,
-                            opciones[1]);
-                    if (n == 0) {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                tecla = KeyEvent.getKeyText(e.getKeyCode());
+                // Inicio desde el menú
+                if (tecla.equals("Intro") || tecla.equals("Enter")) {
+                    if (juego.inMenu) {
+                        juego.inMenu = false;
                         juego.reset();
-                    } else {
-                        juego.musica.stop();
-                        Ventana_Juego.dispose();
-                        System.exit(0);
-                        break;
+                        return;
                     }
+                }
+                // Pausa
+                if (tecla.equalsIgnoreCase("P")) {
+                    juego.paused = !juego.paused;
+                    return;
+                }
+                // Salir
+                if (tecla.equals("Escape")) {
+                    SoundManager.stop(juego.bgmClip);
+                    Ventana_Juego.dispose();
+                    System.exit(0);
+                }
+                if (tecla.equals("Derecha") || tecla.equals("Right")) {
+                    juego.movimiento("Derecha");
+                }
+                if (tecla.equals("Izquierda") || tecla.equals("Left")) {
+                    juego.movimiento("Izquierda");
+                }
+                if (tecla.equals("Arriba") || tecla.equals("Up")) {
+                    juego.movimiento("Arriba");
                 }
             }
         });
-        pintado.start(); // Inicia el hilo para el pintado
+
+    // Timer de juego para repintado suave (60 FPS aprox) y manejo de fin de juego
+    Timer timer = new Timer(16, e -> {
+            if (!juego.termina) {
+                juego.repaint();
+            } else if (!juego.gameOverHandled) {
+                juego.gameOverHandled = true;
+        SoundManager.stop(juego.bgmClip);
+        SoundManager.play("/Assets/gameover.wav");
+                Object[] opciones = { "Si", "No" };
+                int n = JOptionPane.showOptionDialog(null, "¿Quieres volver a jugar?", "Fin del juego",
+                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[1]);
+                if (n == 0) {
+                    juego.vidas = 3; // Reiniciar vidas
+                    juego.termina = false;
+                    juego.gameOverHandled = false;
+                    juego.reset();
+                } else {
+            SoundManager.stop(juego.bgmClip);
+                    Ventana_Juego.dispose();
+                    System.exit(0);
+                }
+            }
+        });
+        timer.start();
 
     }
 }

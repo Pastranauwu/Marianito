@@ -113,9 +113,9 @@ public class Enemigos {
     }
 
     public void movCircular(int centerX, int centerY, double radius, double angle) {
-        double angleInRadians = angle * Math.PI / 360;
-            x = (int)(centerX + radius * Math.cos(angleInRadians));
-            y = (int)(centerY + radius * Math.sin(angleInRadians));
+    double angleInRadians = angle * Math.PI / 180.0; // convertir a radianes correctos
+    x = (int)(centerX + radius * Math.cos(angleInRadians));
+    y = (int)(centerY + radius * Math.sin(angleInRadians));
     }
     public void movVertical() {
         if (tipo.equals("planta") || tipo.equals("koopa_volador")) {
